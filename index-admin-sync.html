@@ -475,6 +475,15 @@
 
       editNight(id) {
         const night = this.data.nights.find(n => n.id === id);
+        
+        // Ensure expenses object exists with splitAmong array
+        if (!night.expenses) {
+          night.expenses = { food: 0, drinks: 0, other: 0, paidBy: null, splitAmong: [], notes: '' };
+        }
+        if (!night.expenses.splitAmong) {
+          night.expenses.splitAmong = [];
+        }
+        
         const content = document.getElementById('editNightContent');
         content.innerHTML = `
           <label>Name:</label><input type="text" id="editNightName" value="${night.name || ''}">
