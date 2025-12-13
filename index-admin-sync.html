@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Poker Tracker - Admin (Synced)</title>
+  <link rel="manifest" href="manifest-admin.json">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e4e4e4; min-height: 100vh; padding: 20px; }
+    
+    .sync-status { position: fixed; top: 10px; right: 10px; background: #2a2a40; padding: 8px 15px; border-radius: 20px; font-size: 12px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
+    .sync-indicator { width: 8px; height: 8px; border-radius: 50%; background: #888; }
+    .sync-indicator.synced { background: #2ecc71; }
+    .sync-indicator.syncing { background: #f39c12; animation: pulse 1s infinite; }
+    .sync-indicator.error { background: #e74c3c; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .setup-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+    .setup-modal.hidden { display: none; }
+    .setup-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 500px; width: 100%; }
+    .setup-content h2 { color: #f39c12; margin-bottom: 20px; }
+    .setup-content input { width: 100%; padding: 12px; background: #1a1a2e; border: 1px solid #3a3a50; border-radius: 8px; color: #e4e4e4; font-size: 14px; margin: 15px 0; }
+    .setup-content button { width: 100%; padding: 12px; background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .setup-steps { background: #1a1a2e; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 13px; line-height: 1.8; }
+    .setup-steps ol { margin-left: 20px; }
+    .setup-steps code { background: #2a2a40; padding: 2px 6px; border-radius: 4px; color: #f39c12; }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 2.5em; background: linear-gradient(45deg, #f39c12, #e74c3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { text-align: center; color: #aaa; margin-bottom: 30px; font-size: 0.9em; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab { padding: 12px 24px; background: #2a2a40; border: none; border-radius: 8px; color: #e4e4e4; cursor: pointer; transition: all 0.3s; font-size: 16px; }
+    .tab:hover { background: #3a3a50; }
+    .tab.active { background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .card { background: #2a2a40; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin: 5px; }
+    .btn-primary { background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; }
+    .btn-secondary { background: #3a3a50; color: #e4e4e4; }
+    .btn-danger { background: #e74c3c; color: white; }
+    input, select { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; width: 100%; margin: 5px 0; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
+    .modal.active { display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .player-item, .night-item { background: #1a1a2e; padding: 15px; border-radius: 8px; margin: 10px 0; }
+    .night-header { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px; }
+    .player-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+    .sort-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+    .leaderboard-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a2e; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+    .leaderboard-item:hover { background: #2a2a3e; transform: translateX(5px); }
+    .achievement { display: inline-block; padding: 5px 10px; background: linear-gradient(45deg, #f39c12, #e74c3c); border-radius: 20px; margin: 5px; font-size: 12px; animation: pop 0.5s ease; }
+    @keyframes pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+    .stat-card { background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center; }
+    .stat-value { font-size: 2em; font-weight: bold; color: #f39c12; }
+    .stat-label { font-size: 0.9em; color: #aaa; margin-top: 5px; }
+    .chart-container { position: relative; height: 300px; margin: 20px 0; }
+    .year-selector { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .badge-card { background: #1a1a2e; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+    .badge-header { font-size: 1.5em; margin-bottom: 10px; }
+    .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .badge-player-tag { background: #2a2a40; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
+    .checkbox-list { max-height: 300px; overflow-y: auto; margin: 10px 0; }
+    .checkbox-item { padding: 10px; background: #1a1a2e; margin: 5px 0; border-radius: 8px; display: flex; align-items: center; gap: 10px; }
+    .attendee-input { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; margin: 10px 0; }
+    @media (max-width: 768px) {
+      h1 { font-size: 1.8em; }
+      .form-row, .attendee-input { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sync-status">
+    <div class="sync-indicator" id="syncIndicator"></div>
+    <span id="syncText">Checking...</span>
+  </div>
+
+  <div id="setupModal" class="setup-modal">
+    <div class="setup-content">
+      <h2>🔐 GitHub Setup</h2>
+      <p>Enter your GitHub Personal Access Token to enable cloud sync:</p>
+      <div class="setup-steps">
+        <strong>Get your token:</strong>
+        <ol>
+          <li>Go to github.com → Settings</li>
+          <li>Developer settings → Tokens (classic)</li>
+          <li>Generate new token (classic)</li>
+          <li>Name: "Poker Tracker"</li>
+          <li>Scope: <code>repo</code></li>
+          <li>Generate and copy token</li>
+        </ol>
+      </div>
+      <input type="password" id="tokenInput" placeholder="Paste token (ghp_...)">
+      <button onclick="saveToken()">Save & Sync</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>🃏 Fold and Furious</h1>
+    <p class="subtitle">👑 Admin • ☁️ Cloud Synced</p>
+
+    <div class="top-controls">
+      <button class="btn btn-secondary" onclick="app.undo()">↶ Undo</button>
+      <div>
+        <button class="btn btn-secondary" onclick="app.manualSync()">🔄 Sync</button>
+        <button class="btn btn-primary" onclick="app.showQRCode()">📱 Share</button>
+        <button class="btn btn-secondary" onclick="app.exportData()">⬇ Export</button>
+        <button class="btn btn-danger" onclick="app.closeYear()">🔒 Close Year</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="app.switchTab('nights')">Nights</button>
+      <button class="tab" onclick="app.switchTab('players')">Players</button>
+      <button class="tab" onclick="app.switchTab('leaderboard')">Leaderboard</button>
+      <button class="tab" onclick="app.switchTab('charts')">Charts</button>
+      <button class="tab" onclick="app.switchTab('badges')">Badges</button>
+      <button class="tab" onclick="app.switchTab('lifetime')">Lifetime</button>
+    </div>
+
+    <div id="nights" class="tab-content active">
+      <div class="card">
+        <h2>Add Night</h2>
+        <input type="text" id="newNightName" placeholder="Night name">
+        <div class="form-row">
+          <input type="date" id="newNightDate">
+          <input type="time" id="newNightTime">
+        </div>
+        <input type="text" id="newNightLocation" placeholder="Location">
+        <button class="btn btn-primary" onclick="app.addNight()">Add Night</button>
+      </div>
+      <div class="card">
+        <div class="sort-controls">
+          <button class="btn btn-secondary" onclick="app.sortNights('newest')">Newest</button>
+          <button class="btn btn-secondary" onclick="app.sortNights('oldest')">Oldest</button>
+          <button class="btn btn-secondary" onclick="app.sortNights('name')">Name</button>
+          <button class="btn btn-secondary" onclick="app.sortNights('location')">Location</button>
+        </div>
+      </div>
+      <div id="nightsList"></div>
+    </div>
+
+    <div id="players" class="tab-content">
+      <div class="card">
+        <h2>Add Player</h2>
+        <input type="text" id="newPlayerName" placeholder="Name">
+        <input type="email" id="newPlayerEmail" placeholder="Email">
+        <button class="btn btn-primary" onclick="app.addPlayer()">Add Player</button>
+      </div>
+      <div class="card"><div id="playersList"></div></div>
+    </div>
+
+    <div id="leaderboard" class="tab-content">
+      <div class="year-selector">
+        <label>Year:</label>
+        <select id="leaderboardYearSelect" onchange="app.renderLeaderboard()">
+          <option value="current">Current</option>
+        </select>
+      </div>
+      <div class="card"><h2>🏆 Leaderboard</h2><div id="leaderboardList"></div></div>
+    </div>
+
+    <div id="charts" class="tab-content">
+      <div class="year-selector">
+        <label>Year:</label>
+        <select id="chartsYearSelect" onchange="app.renderCharts()">
+          <option value="current">Current</option>
+        </select>
+      </div>
+      <div class="card"><h2>Total Winnings</h2><div class="chart-container"><canvas id="totalWinningsChart"></canvas></div></div>
+      <div class="card"><h2>Games Played</h2><div class="chart-container"><canvas id="gamesPlayedChart"></canvas></div></div>
+      <div class="card"><h2>Average Winnings</h2><div class="chart-container"><canvas id="avgWinningsChart"></canvas></div></div>
+    </div>
+
+    <div id="badges" class="tab-content">
+      <div class="card"><h2>🏅 Badges</h2><div id="badgesList"></div></div>
+    </div>
+
+    <div id="lifetime" class="tab-content">
+      <div class="card"><h2>🌟 Lifetime Leaderboard</h2><div id="lifetimeLeaderboard"></div></div>
+      <div class="card"><h2>Year by Year</h2><div id="yearByYearStats"></div></div>
+    </div>
+  </div>
+
+  <div id="editNightModal" class="modal">
+    <div class="modal-content">
+      <h2>Edit Night</h2>
+      <div id="editNightContent"></div>
+      <button class="btn btn-secondary" onclick="app.closeModal('editNightModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="playerProfileModal" class="modal">
+    <div class="modal-content">
+      <h2 id="playerProfileName"></h2>
+      <div id="playerProfileContent"></div>
+      <div class="chart-container"><canvas id="playerHistoryChart"></canvas></div>
+      <button class="btn btn-secondary" onclick="app.closeModal('playerProfileModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="settlementModal" class="modal">
+    <div class="modal-content">
+      <h2>Settlement</h2>
+      <div id="settlementContent"></div>
+      <button class="btn btn-secondary" onclick="app.closeModal('settlementModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="qrModal" class="modal">
+    <div class="modal-content">
+      <h2>📱 Share Viewer</h2>
+      <div style="text-align: center; margin: 20px 0;">
+        <canvas id="qrCanvas" style="max-width: 300px; width: 100%;"></canvas>
+      </div>
+      <div style="background: #1a1a2e; padding: 15px; border-radius: 8px;">
+        <strong>URL:</strong><br>
+        <input type="text" id="viewerUrl" readonly value="https://vibeforlife.github.io/poker-tracker/poker-viewer.html">
+      </div>
+      <button class="btn btn-secondary" onclick="app.closeModal('qrModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <h2>Confirm</h2>
+      <p id="confirmMessage"></p>
+      <button class="btn btn-danger" id="confirmYes">Yes</button>
+      <button class="btn btn-secondary" id="confirmNo">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      GITHUB_USERNAME: 'vibeforlife',
+      GITHUB_REPO: 'poker-tracker',
+      GITHUB_BRANCH: 'main',
+      DATA_FILE: 'poker-data.json'
+    };
+
+    const app = {
+      data: { players: [], nights: [], archivedYears: {}, currentYear: new Date().getFullYear() },
+      history: [],
+      charts: {},
+      currentSort: 'newest',
+      token: null,
+      syncTimeout: null,
+
+      async init() {
+        this.token = localStorage.getItem('github_token');
+        if (!this.token) {
+          document.getElementById('setupModal').classList.remove('hidden');
+          return;
+        }
+        document.getElementById('setupModal').classList.add('hidden');
+        await this.loadFromGitHub();
+        this.render();
+        this.startAutoSync();
+      },
+
+      updateSyncStatus(status, text) {
+        document.getElementById('syncIndicator').className = 'sync-indicator ' + status;
+        document.getElementById('syncText').textContent = text;
+      },
+
+      async loadFromGitHub() {
+        this.updateSyncStatus('syncing', 'Loading...');
+        try {
+          const url = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.DATA_FILE}?ref=${CONFIG.GITHUB_BRANCH}`;
+          const response = await fetch(url, {
+            headers: { 'Authorization': `token ${this.token}`, 'Accept': 'application/vnd.github.v3+json' }
+          });
+          if (response.ok) {
+            const file = await response.json();
+            this.data = JSON.parse(atob(file.content));
+            this.data.sha = file.sha;
+            this.updateSyncStatus('synced', 'Synced');
+          } else if (response.status === 404) {
+            await this.saveToGitHub();
+          } else {
+            throw new Error('Failed to load');
+          }
+        } catch (error) {
+          console.error(error);
+          this.updateSyncStatus('error', 'Failed');
+          const saved = localStorage.getItem('pokerTrackerData');
+          if (saved) this.data = JSON.parse(saved);
+        }
+      },
+
+      async saveToGitHub() {
+        this.updateSyncStatus('syncing', 'Saving...');
+        try {
+          const content = btoa(JSON.stringify(this.data, null, 2));
+          const url = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.DATA_FILE}`;
+          const body = { message: 'Update poker data', content, branch: CONFIG.GITHUB_BRANCH };
+          if (this.data.sha) body.sha = this.data.sha;
+          const response = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${this.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (response.ok) {
+            const result = await response.json();
+            this.data.sha = result.content.sha;
+            this.updateSyncStatus('synced', 'Synced');
+            localStorage.setItem('pokerTrackerData', JSON.stringify(this.data));
+          } else {
+            throw new Error('Failed to save');
+          }
+        } catch (error) {
+          console.error(error);
+          this.updateSyncStatus('error', 'Failed');
+          localStorage.setItem('pokerTrackerData', JSON.stringify(this.data));
+        }
+      },
+
+      saveData() {
+        clearTimeout(this.syncTimeout);
+        this.syncTimeout = setTimeout(() => this.saveToGitHub(), 2000);
+      },
+
+      manualSync() { this.saveToGitHub(); },
+      startAutoSync() { setInterval(() => this.loadFromGitHub(), 30000); },
+      saveState() { this.history.push(JSON.stringify(this.data)); if (this.history.length > 30) this.history.shift(); },
+      
+      undo() {
+        if (this.history.length === 0) { alert('Nothing to undo'); return; }
+        this.data = JSON.parse(this.history.pop());
+        this.saveData();
+        this.render();
+      },
+
+      switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(tab).classList.add('active');
+        if (tab === 'charts') this.renderCharts();
+        if (tab === 'leaderboard') this.renderLeaderboard();
+        if (tab === 'badges') this.renderBadges();
+        if (tab === 'lifetime') this.renderLifetimeStats();
+      },
+
+      addPlayer() {
+        const name = document.getElementById('newPlayerName').value.trim();
+        const email = document.getElementById('newPlayerEmail').value.trim();
+        if (!name) { alert('Enter name'); return; }
+        if (this.data.players.some(p => p.name.toLowerCase() === name.toLowerCase())) { alert('Player exists'); return; }
+        this.saveState();
+        this.data.players.push({ id: Date.now(), name, email });
+        document.getElementById('newPlayerName').value = '';
+        document.getElementById('newPlayerEmail').value = '';
+        this.saveData();
+        this.render();
+      },
+
+      deletePlayer(id) {
+        this.showConfirm('Delete player?', () => {
+          this.saveState();
+          this.data.players = this.data.players.filter(p => p.id !== id);
+          this.data.nights.forEach(n => n.attendees = n.attendees.filter(a => a.playerId !== id));
+          this.saveData();
+          this.render();
+        });
+      },
+
+      addNight() {
+        const name = document.getElementById('newNightName').value.trim() || 'Poker Night';
+        const date = document.getElementById('newNightDate').value;
+        const time = document.getElementById('newNightTime').value || '19:00';
+        const location = document.getElementById('newNightLocation').value.trim();
+        if (!date) { alert('Select date'); return; }
+        this.saveState();
+        this.data.nights.push({ id: Date.now(), name, date, time, location, attendees: [], buyIn: 20 });
+        document.getElementById('newNightName').value = '';
+        document.getElementById('newNightDate').value = '';
+        document.getElementById('newNightTime').value = '';
+        document.getElementById('newNightLocation').value = '';
+        this.saveData();
+        this.sortNights(this.currentSort);
+        this.render();
+      },
+
+      deleteNight(id) {
+        this.showConfirm('Delete night?', () => {
+          this.saveState();
+          this.data.nights = this.data.nights.filter(n => n.id !== id);
+          this.saveData();
+          this.render();
+        });
+      },
+
+      sortNights(method) {
+        this.currentSort = method;
+        switch(method) {
+          case 'newest': this.data.nights.sort((a, b) => new Date(b.date) - new Date(a.date)); break;
+          case 'oldest': this.data.nights.sort((a, b) => new Date(a.date) - new Date(b.date)); break;
+          case 'name': this.data.nights.sort((a, b) => (a.name || '').localeCompare(b.name || '')); break;
+          case 'location': this.data.nights.sort((a, b) => (a.location || '').localeCompare(b.location || '')); break;
+        }
+        this.render();
+      },
+
+      closeYear() {
+        this.showConfirm(`Close ${this.data.currentYear}?`, () => {
+          this.saveState();
+          this.data.archivedYears[this.data.currentYear] = {
+            players: JSON.parse(JSON.stringify(this.data.players)),
+            nights: JSON.parse(JSON.stringify(this.data.nights))
+          };
+          this.data.nights = [];
+          this.data.currentYear = new Date().getFullYear();
+          this.saveData();
+          this.render();
+          this.populateYearSelectors();
+          alert(`Year closed!`);
+        });
+      },
+
+      exportData() {
+        const dataStr = JSON.stringify(this.data, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'poker-tracker-backup.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+
+      showQRCode() {
+        const canvas = document.getElementById('qrCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = 300;
+        canvas.width = size;
+        canvas.height = size;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent('https://vibeforlife.github.io/poker-tracker/poker-viewer.html')}`;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => ctx.drawImage(img, 0, 0, size, size);
+        img.src = qrUrl;
+        document.getElementById('qrModal').classList.add('active');
+      },
+
+      showConfirm(message, callback) {
+        document.getElementById('confirmMessage').textContent = message;
+        document.getElementById('confirmModal').classList.add('active');
+        const yesBtn = document.getElementById('confirmYes');
+        const noBtn = document.getElementById('confirmNo');
+        const handleYes = () => {
+          callback();
+          this.closeModal('confirmModal');
+          yesBtn.removeEventListener('click', handleYes);
+          noBtn.removeEventListener('click', handleNo);
+        };
+        const handleNo = () => {
+          this.closeModal('confirmModal');
+          yesBtn.removeEventListener('click', handleYes);
+          noBtn.removeEventListener('click', handleNo);
+        };
+        yesBtn.addEventListener('click', handleYes);
+        noBtn.addEventListener('click', handleNo);
+      },
+
+      editNight(id) {
+        const night = this.data.nights.find(n => n.id === id);
+        const content = document.getElementById('editNightContent');
+        content.innerHTML = `
+          <label>Name:</label><input type="text" id="editNightName" value="${night.name || ''}">
+          <div class="form-row">
+            <div><label>Date:</label><input type="date" id="editNightDate" value="${night.date}"></div>
+            <div><label>Time:</label><input type="time" id="editNightTime" value="${night.time || '19:00'}"></div>
+          </div>
+          <label>Location:</label><input type="text" id="editNightLocation" value="${night.location || ''}">
+          <label>Buy-In:</label><input type="number" id="editBuyIn" value="${night.buyIn}">
+          <h3>Attendees</h3>
+          <input type="text" id="playerSearch" placeholder="Search..." onkeyup="app.filterPlayers()">
+          <div class="checkbox-list" id="attendeeCheckboxes"></div>
+          <h3>Results</h3>
+          <div id="attendeeResults"></div>
+          <button class="btn btn-primary" onclick="app.saveNight(${id})">Save</button>
+          <button class="btn btn-secondary" onclick="app.calculateSettlement(${id})">Settlement</button>
+        `;
+        const checkboxContainer = document.getElementById('attendeeCheckboxes');
+        this.data.players.forEach(player => {
+          const checked = night.attendees.some(a => a.playerId === player.id);
+          checkboxContainer.innerHTML += `
+            <div class="checkbox-item">
+              <input type="checkbox" id="player_${player.id}" ${checked ? 'checked' : ''}>
+              <label for="player_${player.id}">${player.name}</label>
+            </div>
+          `;
+        });
+        this.updateAttendeeResults(night);
+        document.getElementById('editNightModal').classList.add('active');
+      },
+
+      filterPlayers() {
+        const search = document.getElementById('playerSearch').value.toLowerCase();
+        document.querySelectorAll('.checkbox-item').forEach(item => {
+          const label = item.querySelector('label').textContent.toLowerCase();
+          item.style.display = label.includes(search) ? 'flex' : 'none';
+        });
+      },
+
+      updateAttendeeResults(night) {
+        const resultsDiv = document.getElementById('attendeeResults');
+        resultsDiv.innerHTML = '';
+        night.attendees.forEach(attendee => {
+          const player = this.data.players.find(p => p.id === attendee.playerId);
+          if (!player) return;
+          resultsDiv.innerHTML += `
+            <div class="attendee-input">
+              <span>${player.name}</span>
+              <input type="number" value="${attendee.winnings}" onchange="app.updateWinnings(${night.id}, ${attendee.playerId}, this.value)">
+              <button class="btn btn-danger" onclick="app.removeAttendee(${night.id}, ${attendee.playerId})">Remove</button>
+            </div>
+          `;
+        });
+        const total = night.attendees.reduce((sum, a) => sum + parseFloat(a.winnings || 0), 0);
+        resultsDiv.innerHTML += `<p><strong>Total: $${total.toFixed(2)}</strong></p>`;
+      },
+
+      saveNight(id) {
+        this.saveState();
+        const night = this.data.nights.find(n => n.id === id);
+        night.name = document.getElementById('editNightName').value.trim() || 'Poker Night';
+        night.date = document.getElementById('editNightDate').value;
+        night.time = document.getElementById('editNightTime').value || '19:00';
+        night.location = document.getElementById('editNightLocation').value.trim();
+        night.buyIn = parseFloat(document.getElementById('editBuyIn').value) || 20;
+        const currentIds = night.attendees.map(a => a.playerId);
+        const selectedIds = [];
+        this.data.players.forEach(player => {
+          const checkbox = document.getElementById(`player_${player.id}`);
+          if (checkbox && checkbox.checked) {
+            selectedIds.push(player.id);
+            if (!currentIds.includes(player.id)) {
+              night.attendees.push({ playerId: player.id, winnings: -night.buyIn });
+            }
+          }
+        });
+        night.attendees = night.attendees.filter(a => selectedIds.includes(a.playerId));
+        this.saveData();
+        this.updateAttendeeResults(night);
+      },
+
+      updateWinnings(nightId, playerId, value) {
+        const night = this.data.nights.find(n => n.id === nightId);
+        const attendee = night.attendees.find(a => a.playerId === playerId);
+        attendee.winnings = parseFloat(value) || 0;
+        this.saveData();
+        this.updateAttendeeResults(night);
+      },
+
+      removeAttendee(nightId, playerId) {
+        const night = this.data.nights.find(n => n.id === nightId);
+        night.attendees = night.attendees.filter(a => a.playerId !== playerId);
+        this.saveData();
+        this.updateAttendeeResults(night);
+      },
+
+      calculateSettlement(nightId) {
+        const night = this.data.nights.find(n => n.id === nightId);
+        const balances = night.attendees.map(a => ({
+          player: this.data.players.find(p => p.id === a.playerId).name,
+          balance: a.winnings
+        })).sort((a, b) => a.balance - b.balance);
+        const transactions = [];
+        const debtors = balances.filter(b => b.balance < 0).map(b => ({...b}));
+        const creditors = balances.filter(b => b.balance > 0).map(b => ({...b}));
+        debtors.forEach(debtor => {
+          let remaining = -debtor.balance;
+          creditors.forEach(creditor => {
+            if (remaining > 0 && creditor.balance > 0) {
+              const amount = Math.min(remaining, creditor.balance);
+              transactions.push(`${debtor.player} pays ${creditor.player}: $${amount.toFixed(2)}`);
+              remaining -= amount;
+              creditor.balance -= amount;
+            }
+          });
+        });
+        document.getElementById('settlementContent').innerHTML = transactions.length > 0 ? transactions.join('<br>') : 'All settled!';
+        document.getElementById('settlementModal').classList.add('active');
+      },
+
+      populateYearSelectors() {
+        const years = Object.keys(this.data.archivedYears || {}).sort((a, b) => b - a);
+        ['leaderboardYearSelect', 'chartsYearSelect'].forEach(selectId => {
+          const select = document.getElementById(selectId);
+          select.innerHTML = '<option value="current">Current (' + this.data.currentYear + ')</option>';
+          years.forEach(year => {
+            select.innerHTML += `<option value="${year}">${year}</option>`;
+          });
+        });
+      },
+
+      getYearData(year) {
+        if (year === 'current') return { players: this.data.players, nights: this.data.nights };
+        return this.data.archivedYears[year] || { players: [], nights: [] };
+      },
+
+      getPlayerStats(yearData = null) {
+        const data = yearData || { players: this.data.players, nights: this.data.nights };
+        return data.players.map(player => {
+          const games = data.nights.filter(n => n.attendees.some(a => a.playerId === player.id)).length;
+          const totalWinnings = data.nights.reduce((sum, night) => {
+            const attendee = night.attendees.find(a => a.playerId === player.id);
+            return sum + (attendee ? attendee.winnings : 0);
+          }, 0);
+          const avgWinnings = games > 0 ? totalWinnings / games : 0;
+          return { id: player.id, name: player.name, games, totalWinnings, avgWinnings };
+        });
+      },
+
+      getAchievements(stats, yearData = null) {
+        const achievements = [];
+        const data = yearData || { players: this.data.players, nights: this.data.nights };
+        const allStats = this.getPlayerStats(yearData);
+        const maxWinnings = Math.max(...allStats.map(s => s.totalWinnings));
+        if (stats.totalWinnings === maxWinnings && maxWinnings > 0) achievements.push('🏆 Top Earner YTD');
+        const playerNights = data.nights.filter(n => n.attendees.some(a => a.playerId === stats.id)).sort((a, b) => new Date(a.date) - new Date(b.date));
+        let streak = 0, maxStreak = 0;
+        playerNights.forEach(night => {
+          const attendee = night.attendees.find(a => a.playerId === stats.id);
+          if (attendee.winnings > 0) { streak++; maxStreak = Math.max(maxStreak, streak); } else streak = 0;
+        });
+        if (maxStreak >= 3) achievements.push('🔥 Hot Streak');
+        const maxWin = Math.max(...playerNights.map(n => {
+          const a = n.attendees.find(at => at.playerId === stats.id);
+          return a ? a.winnings : -Infinity;
+        }), 0);
+        if (maxWin >= 100) achievements.push('💎 High Roller');
+        if (stats.games >= 5) achievements.push('🎮 Regular Player');
+        if (stats.games >= 20) achievements.push('🌟 Veteran');
+        if (stats.games >= 50) achievements.push('💯 Half Century');
+        if (stats.totalWinnings >= 100) achievements.push('💵 $100 Club');
+        if (stats.totalWinnings >= 500) achievements.push('💎 $500 Club');
+        return achievements;
+      },
+
+      showPlayerProfile(playerId) {
+        const player = this.data.players.find(p => p.id === playerId);
+        const stats = this.getPlayerStats().find(s => s.id === playerId);
+        const achievements = this.getAchievements(stats);
+        document.getElementById('playerProfileName').textContent = player.name;
+        const content = document.getElementById('playerProfileContent');
+        content.innerHTML = `
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value">${stats.games}</div><div class="stat-label">Games</div></div>
+            <div class="stat-card"><div class="stat-value">$${stats.totalWinnings.toFixed(2)}</div><div class="stat-label">Total</div></div>
+            <div class="stat-card"><div class="stat-value">$${stats.avgWinnings.toFixed(2)}</div><div class="stat-label">Avg</div></div>
+          </div>
+          <h3>Achievements</h3>
+          <div>${achievements.map(a => `<span class="achievement">${a}</span>`).join('')}</div>
+          <h3>Performance</h3>
+        `;
+        const history = this.data.nights.filter(n => n.attendees.some(a => a.playerId === playerId)).sort((a, b) => new Date(a.date) - new Date(b.date)).map(night => ({
+          date: night.date,
+          winnings: night.attendees.find(a => a.playerId === playerId).winnings
+        }));
+        const ctx = document.getElementById('playerHistoryChart');
+        if (this.charts.playerHistory) this.charts.playerHistory.destroy();
+        this.charts.playerHistory = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: history.map(h => h.date),
+            datasets: [{ label: 'Winnings', data: history.map(h => h.winnings), borderColor: '#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', tension: 0.4 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+            }
+          }
+        });
+        document.getElementById('playerProfileModal').classList.add('active');
+      },
+
+      renderLeaderboard() {
+        const year = document.getElementById('leaderboardYearSelect').value;
+        const yearData = this.getYearData(year);
+        const stats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
+        const list = document.getElementById('leaderboardList');
+        list.innerHTML = stats.map((s, i) => {
+          const achievements = this.getAchievements(s, yearData);
+          return `
+            <div class="leaderboard-item" onclick="app.showPlayerProfile(${s.id})">
+              <div>
+                <strong>${i + 1}. ${s.name}</strong>
+                <div>${achievements.map(a => `<span class="achievement">${a}</span>`).join('')}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 1.5em; color: ${s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c'}">$${s.totalWinnings.toFixed(2)}</div>
+                <div style="font-size: 0.9em; color: #aaa;">${s.games} games • $${s.avgWinnings.toFixed(2)} avg</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      renderCharts() {
+        const year = document.getElementById('chartsYearSelect').value;
+        const yearData = this.getYearData(year);
+        const stats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
+        const ctx1 = document.getElementById('totalWinningsChart');
+        if (this.charts.totalWinnings) this.charts.totalWinnings.destroy();
+        this.charts.totalWinnings = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: stats.map(s => s.name),
+            datasets: [{ label: 'Total Winnings', data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)') }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+            }
+          }
+        });
+        const ctx2 = document.getElementById('gamesPlayedChart');
+        if (this.charts.gamesPlayed) this.charts.gamesPlayed.destroy();
+        this.charts.gamesPlayed = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: stats.map(s => s.name),
+            datasets: [{ label: 'Games Played', data: stats.map(s => s.games), backgroundColor: 'rgba(243, 156, 18, 0.8)' }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+            }
+          }
+        });
+        const ctx3 = document.getElementById('avgWinningsChart');
+        if (this.charts.avgWinnings) this.charts.avgWinnings.destroy();
+        this.charts.avgWinnings = new Chart(ctx3, {
+          type: 'line',
+          data: {
+            labels: stats.map(s => s.name),
+            datasets: [{ label: 'Average', data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', backgroundColor: 'rgba(155, 89, 182, 0.1)', tension: 0.4 }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
+            }
+          }
+        });
+      },
+
+      renderBadges() {
+        const badgeDefs = [
+          { badge: '🏆 Top Earner YTD', description: 'Highest total winnings' },
+          { badge: '🔥 Hot Streak', description: '3+ wins in a row' },
+          { badge: '💎 High Roller', description: 'Single win of $100+' },
+          { badge: '🎮 Regular Player', description: '5+ games' },
+          { badge: '🌟 Veteran', description: '20+ games' },
+          { badge: '💯 Half Century', description: '50+ games' },
+          { badge: '💵 $100 Club', description: '$100+ total' },
+          { badge: '💎 $500 Club', description: '$500+ total' }
+        ];
+        const stats = this.getPlayerStats();
+        const badgeHolders = {};
+        stats.forEach(s => {
+          const achievements = this.getAchievements(s);
+          achievements.forEach(badge => {
+            if (!badgeHolders[badge]) badgeHolders[badge] = [];
+            badgeHolders[badge].push(s.name);
+          });
+        });
+        const list = document.getElementById('badgesList');
+        list.innerHTML = badgeDefs.map(def => {
+          const holders = badgeHolders[def.badge] || [];
+          return `
+            <div class="badge-card">
+              <div class="badge-header">${def.badge}</div>
+              <div style="color: #aaa;">${def.description}</div>
+              <div class="badge-players">
+                ${holders.length > 0 ? holders.map(name => `<span class="badge-player-tag">${name}</span>`).join('') : '<span style="color: #888;">None yet</span>'}
+              </div>
+            </div>
+          `;
+        }).join('');
+      },
+
+      renderLifetimeStats() {
+        const lifetimeStats = {};
+        this.data.players.forEach(player => {
+          lifetimeStats[player.id] = { name: player.name, totalGames: 0, totalWinnings: 0, years: {} };
+        });
+        Object.keys(this.data.archivedYears || {}).forEach(year => {
+          const yearData = this.data.archivedYears[year];
+          const yearStats = this.getPlayerStats(yearData);
+          yearStats.forEach(s => {
+            if (lifetimeStats[s.id]) {
+              lifetimeStats[s.id].totalGames += s.games;
+              lifetimeStats[s.id].totalWinnings += s.totalWinnings;
+              lifetimeStats[s.id].years[year] = { games: s.games, winnings: s.totalWinnings };
+            }
+          });
+        });
+        const currentStats = this.getPlayerStats();
+        currentStats.forEach(s => {
+          if (lifetimeStats[s.id]) {
+            lifetimeStats[s.id].totalGames += s.games;
+            lifetimeStats[s.id].totalWinnings += s.totalWinnings;
+            lifetimeStats[s.id].years[this.data.currentYear] = { games: s.games, winnings: s.totalWinnings };
+          }
+        });
+        const sortedLifetime = Object.values(lifetimeStats).filter(s => s.totalGames > 0).sort((a, b) => b.totalWinnings - a.totalWinnings);
+        const lifetimeList = document.getElementById('lifetimeLeaderboard');
+        lifetimeList.innerHTML = sortedLifetime.map((s, i) => `
+          <div class="leaderboard-item">
+            <div><strong>${i + 1}. ${s.name}</strong></div>
+            <div style="text-align: right;">
+              <div style="font-size: 1.5em; color: ${s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c'}">$${s.totalWinnings.toFixed(2)}</div>
+              <div style="font-size: 0.9em; color: #aaa;">${s.totalGames} games • $${(s.totalWinnings / s.totalGames).toFixed(2)} avg</div>
+            </div>
+          </div>
+        `).join('');
+        const yearByYear = document.getElementById('yearByYearStats');
+        const years = [...new Set([...Object.keys(this.data.archivedYears || {}), this.data.currentYear.toString()])].sort((a, b) => b - a);
+        yearByYear.innerHTML = years.map(year => {
+          const yearData = year == this.data.currentYear ? { players: this.data.players, nights: this.data.nights } : this.data.archivedYears[year];
+          if (!yearData || !yearData.nights || yearData.nights.length === 0) return '';
+          const yearStats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
+          const topPlayer = yearStats[0];
+          return `
+            <div class="card">
+              <h3>${year} ${year == this.data.currentYear ? '(Current)' : ''}</h3>
+              <p>Games: ${yearData.nights.length}</p>
+              <p>Top: ${topPlayer ? `${topPlayer.name} ($${topPlayer.totalWinnings.toFixed(2)})` : 'N/A'}</p>
+            </div>
+          `;
+        }).join('');
+      },
+
+      closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+      },
+
+      render() {
+        const playersList = document.getElementById('playersList');
+        if (playersList) {
+          playersList.innerHTML = this.data.players.map(p => `
+            <div class="player-item">
+              <div>
+                <strong>${p.name}</strong>
+                ${p.email ? `<div style="font-size: 0.9em; color: #aaa;">${p.email}</div>` : ''}
+              </div>
+              <button class="btn btn-danger" onclick="app.deletePlayer(${p.id})">Delete</button>
+            </div>
+          `).join('');
+        }
+        const nightsList = document.getElementById('nightsList');
+        if (nightsList) {
+          nightsList.innerHTML = this.data.nights.map(n => `
+            <div class="night-item">
+              <div class="night-header">
+                <div>
+                  <h3>${n.name}</h3>
+                  <div style="font-size: 0.9em; color: #aaa;">
+                    📅 ${n.date} ${n.time ? '• 🕐 ' + n.time : ''}
+                    ${n.location ? '<br>📍 ' + n.location : ''}
+                    <br>👥 ${n.attendees.length} attendees
+                  </div>
+                </div>
+                <div>
+                  <button class="btn btn-primary" onclick="app.editNight(${n.id})">Edit</button>
+                  <button class="btn btn-danger" onclick="app.deleteNight(${n.id})">Delete</button>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+        this.renderLeaderboard();
+        this.populateYearSelectors();
+      }
+    };
+
+    function saveToken() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token || !token.startsWith('ghp_')) {
+        alert('Invalid token (must start with ghp_)');
+        return;
+      }
+      localStorage.setItem('github_token', token);
+      app.token = token;
+      app.init();
+    }
+
+    app.init();
+  </script>
+</body>
+</html>
