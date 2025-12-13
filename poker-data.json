@@ -146,7 +146,15 @@
       "time": "21:09",
       "location": "test7location",
       "attendees": [],
-      "buyIn": 20
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
     },
     {
       "id": 1765598092758,
@@ -197,5 +205,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "5bd1a3950a4036a90085526b2016c762efab73fc"
+  "sha": "2a8e1a0fec01796f8bc55eb33c5611cb24a97964"
 }
