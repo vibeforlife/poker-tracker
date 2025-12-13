@@ -42,7 +42,8 @@
     .btn-primary { background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; }
     .btn-secondary { background: #3a3a50; color: #e4e4e4; }
     .btn-danger { background: #e74c3c; color: white; }
-    input, select { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; width: 100%; margin: 5px 0; }
+    input, select, textarea { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; width: 100%; margin: 5px 0; }
+    textarea { min-height: 80px; font-family: inherit; resize: vertical; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
     .modal.active { display: flex; align-items: center; justify-content: center; }
     .modal-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
@@ -498,6 +499,18 @@
               <option value="">Select player</option>
               ${this.data.players.map(p => `<option value="${p.id}" ${night.expenses?.paidBy === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
             </select>
+            <label>Split among (select who should pay):</label>
+            <div style="max-height: 150px; overflow-y: auto; background: #2a2a40; padding: 10px; border-radius: 8px; margin: 10px 0;">
+              ${this.data.players.map(p => {
+                const checked = night.expenses?.splitAmong?.includes(p.id) || false;
+                return `
+                  <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0;">
+                    <input type="checkbox" id="expenseSplit_${p.id}" ${checked ? 'checked' : ''} style="width: auto; margin: 0;">
+                    <label for="expenseSplit_${p.id}" style="margin: 0;">${p.name}</label>
+                  </div>
+                `;
+              }).join('')}
+            </div>
             <label>Expense Notes:</label><input type="text" id="expenseNotes" value="${night.expenses?.notes || ''}" placeholder="Pizza, beer, etc.">
           </div>
           
