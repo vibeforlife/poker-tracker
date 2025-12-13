@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Poker Admin">
+  <title>Poker Tracker - Admin (Synced)</title>
+  
+  <link rel="manifest" href="manifest-admin.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%231a1a2e'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='300' fill='%23f39c12'>🃏</text></svg>">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e4e4e4;
+      min-height: 100vh;
+      padding: 20px;
+      padding-bottom: 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .sync-status {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #2a2a40;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sync-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #888;
+    }
+
+    .sync-indicator.synced {
+      background: #2ecc71;
+    }
+
+    .sync-indicator.syncing {
+      background: #f39c12;
+      animation: pulse 1s infinite;
+    }
+
+    .sync-indicator.error {
+      background: #e74c3c;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .setup-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 20px;
+    }
+
+    .setup-modal.hidden {
+      display: none;
+    }
+
+    .setup-content {
+      background: #2a2a40;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .setup-content h2 {
+      color: #f39c12;
+      margin-bottom: 20px;
+    }
+
+    .setup-content p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    .setup-content input {
+      width: 100%;
+      padding: 12px;
+      background: #1a1a2e;
+      border: 1px solid #3a3a50;
+      border-radius: 8px;
+      color: #e4e4e4;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .setup-content button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(45deg, #f39c12, #e74c3c);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .setup-steps {
+      background: #1a1a2e;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .setup-steps ol {
+      margin-left: 20px;
+    }
+
+    .setup-steps code {
+      background: #2a2a40;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #f39c12;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      background: linear-gradient(45deg, #f39c12, #e74c3c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 30px;
+      font-size: 0.9em;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: #2a2a40;
+      border: none;
+      border-radius: 8px;
+      color: #e4e4e4;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .tab:active {
+      transform: scale(0.95);
+    }
+
+    .tab.active {
+      background: linear-gradient(45deg, #f39c12, #e74c3c);
+      color: white;
+    }
+
+    .card {
+      background: #2a2a40;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      margin: 5px;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #f39c12, #e74c3c);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #3a3a50;
+      color: #e4e4e4;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    input, select, textarea {
+      padding: 12px;
+      border: 1px solid #3a3a50;
+      border-radius: 8px;
+      background: #1a1a2e;
+      color: #e4e4e4;
+      font-size: 16px;
+      width: 100%;
+      margin: 5px 0;
+    }
+
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .player-item, .night-item {
+      background: #1a1a2e;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .night-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .player-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .sort-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+        padding-bottom: 60px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .top-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #2a2a40;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sync Status Indicator -->
+  <div class="sync-status">
+    <div class="sync-indicator" id="syncIndicator"></div>
+    <span id="syncText">Checking...</span>
+  </div>
+
+  <!-- Setup Modal -->
+  <div id="setupModal" class="setup-modal">
+    <div class="setup-content">
+      <h2>🔐 GitHub Setup Required</h2>
+      <p>To sync your data across devices, we need a GitHub Personal Access Token.</p>
+      
+      <div class="setup-steps">
+        <strong>How to get your token:</strong>
+        <ol>
+          <li>Go to <code>github.com</code> → Settings</li>
+          <li>Developer settings → Personal access tokens → Tokens (classic)</li>
+          <li>Generate new token (classic)</li>
+          <li>Name it "Poker Tracker"</li>
+          <li>Select scope: <code>repo</code> (full control)</li>
+          <li>Click "Generate token"</li>
+          <li>Copy and paste it below</li>
+        </ol>
+      </div>
+
+      <input 
+        type="password" 
+        id="tokenInput" 
+        placeholder="Paste your GitHub token here (ghp_...)"
+      >
+      
+      <button onclick="saveToken()">Save & Start Syncing</button>
+      
+      <p style="margin-top: 15px; font-size: 12px; color: #888;">
+        ⚠️ Your token is stored securely in your browser and never shared.
+      </p>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>🃏 Fold and Furious</h1>
+    <p class="subtitle">👑 Admin Panel • ☁️ Cloud Synced</p>
+
+    <div class="top-controls">
+      <button class="btn btn-secondary" onclick="app.undo()">↶ Undo</button>
+      <div>
+        <button class="btn btn-secondary" onclick="app.manualSync()">🔄 Sync Now</button>
+        <button class="btn btn-primary" onclick="app.showQRCode()">📱 Share</button>
+        <button class="btn btn-danger" onclick="app.closeYear()">🔒 Close Year</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="app.switchTab('nights')">Nights</button>
+      <button class="tab" onclick="app.switchTab('players')">Players</button>
+      <button class="tab" onclick="app.switchTab('leaderboard')">Leaderboard</button>
+    </div>
+
+    <div id="nights" class="tab-content active">
+      <div class="card">
+        <h2>Add New Night</h2>
+        <input type="text" id="newNightName" placeholder="Night name">
+        <div class="form-row">
+          <input type="date" id="newNightDate">
+          <input type="time" id="newNightTime">
+        </div>
+        <input type="text" id="newNightLocation" placeholder="Location">
+        <button class="btn btn-primary" onclick="app.addNight()">Add Night</button>
+      </div>
+      
+      <div class="card">
+        <div class="sort-controls">
+          <button class="btn btn-secondary" onclick="app.sortNights('newest')">Newest</button>
+          <button class="btn btn-secondary" onclick="app.sortNights('oldest')">Oldest</button>
+          <button class="btn btn-secondary" onclick="app.sortNights('name')">Name</button>
+          <button class="btn btn-secondary" onclick="app.sortNights('location')">Location</button>
+        </div>
+      </div>
+      
+      <div id="nightsList"></div>
+    </div>
+
+    <div id="players" class="tab-content">
+      <div class="card">
+        <h2>Add Player</h2>
+        <input type="text" id="newPlayerName" placeholder="Player name">
+        <input type="email" id="newPlayerEmail" placeholder="Email">
+        <button class="btn btn-primary" onclick="app.addPlayer()">Add Player</button>
+      </div>
+      <div class="card">
+        <div id="playersList"></div>
+      </div>
+    </div>
+
+    <div id="leaderboard" class="tab-content">
+      <div class="card">
+        <h2>🏆 Leaderboard</h2>
+        <div id="leaderboardList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for QR Code -->
+  <div id="qrModal" class="modal">
+    <div class="modal-content">
+      <h2>📱 Share Viewer</h2>
+      <p>Players scan this QR code:</p>
+      <div style="text-align: center; margin: 20px 0;">
+        <canvas id="qrCanvas" style="max-width: 300px; width: 100%;"></canvas>
+      </div>
+      <div style="background: #1a1a2e; padding: 15px; border-radius: 8px;">
+        <strong>URL:</strong><br>
+        <input type="text" id="viewerUrl" readonly value="https://vibeforlife.github.io/poker-tracker/poker-viewer.html">
+      </div>
+      <button class="btn btn-secondary" onclick="app.closeModal('qrModal')">Close</button>
+    </div>
+  </div>
+
+  <script>
+    const CONFIG = {
+      GITHUB_USERNAME: 'vibeforlife',
+      GITHUB_REPO: 'poker-tracker',
+      GITHUB_BRANCH: 'main',
+      DATA_FILE: 'poker-data.json'
+    };
+
+    const app = {
+      data: {
+        players: [],
+        nights: [],
+        archivedYears: {},
+        currentYear: new Date().getFullYear()
+      },
+      history: [],
+      currentSort: 'newest',
+      token: null,
+      syncTimeout: null,
+
+      async init() {
+        this.token = localStorage.getItem('github_token');
+        
+        if (!this.token) {
+          document.getElementById('setupModal').classList.remove('hidden');
+          return;
+        }
+
+        document.getElementById('setupModal').classList.add('hidden');
+        await this.loadFromGitHub();
+        this.render();
+        this.startAutoSync();
+      },
+
+      updateSyncStatus(status, text) {
+        const indicator = document.getElementById('syncIndicator');
+        const textEl = document.getElementById('syncText');
+        
+        indicator.className = 'sync-indicator ' + status;
+        textEl.textContent = text;
+      },
+
+      async loadFromGitHub() {
+        this.updateSyncStatus('syncing', 'Loading...');
+        
+        try {
+          const url = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.DATA_FILE}?ref=${CONFIG.GITHUB_BRANCH}`;
+          
+          const response = await fetch(url, {
+            headers: {
+              'Authorization': `token ${this.token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            }
+          });
+
+          if (response.ok) {
+            const file = await response.json();
+            const content = atob(file.content);
+            this.data = JSON.parse(content);
+            this.data.sha = file.sha; // Store SHA for updates
+            this.updateSyncStatus('synced', 'Synced');
+          } else if (response.status === 404) {
+            // File doesn't exist yet, create it
+            await this.saveToGitHub();
+          } else {
+            throw new Error('Failed to load from GitHub');
+          }
+        } catch (error) {
+          console.error('Load error:', error);
+          this.updateSyncStatus('error', 'Sync failed');
+          
+          // Fallback to localStorage
+          const saved = localStorage.getItem('pokerTrackerData');
+          if (saved) {
+            this.data = JSON.parse(saved);
+          }
+        }
+      },
+
+      async saveToGitHub() {
+        this.updateSyncStatus('syncing', 'Saving...');
+        
+        try {
+          const content = btoa(JSON.stringify(this.data, null, 2));
+          const url = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.GITHUB_REPO}/contents/${CONFIG.DATA_FILE}`;
+          
+          const body = {
+            message: 'Update poker data',
+            content: content,
+            branch: CONFIG.GITHUB_BRANCH
+          };
+
+          if (this.data.sha) {
+            body.sha = this.data.sha;
+          }
+
+          const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${this.token}`,
+              'Accept': 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            this.data.sha = result.content.sha;
+            this.updateSyncStatus('synced', 'Synced');
+            
+            // Also save to localStorage as backup
+            localStorage.setItem('pokerTrackerData', JSON.stringify(this.data));
+          } else {
+            throw new Error('Failed to save to GitHub');
+          }
+        } catch (error) {
+          console.error('Save error:', error);
+          this.updateSyncStatus('error', 'Sync failed');
+          
+          // Save to localStorage as fallback
+          localStorage.setItem('pokerTrackerData', JSON.stringify(this.data));
+        }
+      },
+
+      saveData() {
+        // Debounce saves to avoid too many GitHub API calls
+        clearTimeout(this.syncTimeout);
+        this.syncTimeout = setTimeout(() => {
+          this.saveToGitHub();
+        }, 2000); // Wait 2 seconds after last change
+      },
+
+      manualSync() {
+        this.saveToGitHub();
+      },
+
+      startAutoSync() {
+        // Auto-sync every 30 seconds
+        setInterval(() => {
+          this.loadFromGitHub();
+        }, 30000);
+      },
+
+      saveState() {
+        this.history.push(JSON.stringify(this.data));
+        if (this.history.length > 30) this.history.shift();
+      },
+
+      undo() {
+        if (this.history.length === 0) {
+          alert('Nothing to undo');
+          return;
+        }
+        this.data = JSON.parse(this.history.pop());
+        this.saveData();
+        this.render();
+      },
+
+      switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(tab).classList.add('active');
+      },
+
+      addPlayer() {
+        const name = document.getElementById('newPlayerName').value.trim();
+        const email = document.getElementById('newPlayerEmail').value.trim();
+        
+        if (!name) {
+          alert('Please enter a player name');
+          return;
+        }
+        
+        if (this.data.players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+          alert('Player already exists');
+          return;
+        }
+        
+        this.saveState();
+        this.data.players.push({ id: Date.now(), name, email });
+        document.getElementById('newPlayerName').value = '';
+        document.getElementById('newPlayerEmail').value = '';
+        this.saveData();
+        this.render();
+      },
+
+      addNight() {
+        const name = document.getElementById('newNightName').value.trim() || 'Poker Night';
+        const date = document.getElementById('newNightDate').value;
+        const time = document.getElementById('newNightTime').value || '19:00';
+        const location = document.getElementById('newNightLocation').value.trim();
+        
+        if (!date) {
+          alert('Please select a date');
+          return;
+        }
+        
+        this.saveState();
+        this.data.nights.push({
+          id: Date.now(),
+          name,
+          date,
+          time,
+          location,
+          attendees: [],
+          buyIn: 20
+        });
+        
+        document.getElementById('newNightName').value = '';
+        document.getElementById('newNightDate').value = '';
+        document.getElementById('newNightTime').value = '';
+        document.getElementById('newNightLocation').value = '';
+        
+        this.saveData();
+        this.sortNights(this.currentSort);
+        this.render();
+      },
+
+      sortNights(method) {
+        this.currentSort = method;
+        switch(method) {
+          case 'newest':
+            this.data.nights.sort((a, b) => new Date(b.date) - new Date(a.date));
+            break;
+          case 'oldest':
+            this.data.nights.sort((a, b) => new Date(a.date) - new Date(b.date));
+            break;
+          case 'name':
+            this.data.nights.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            break;
+          case 'location':
+            this.data.nights.sort((a, b) => (a.location || '').localeCompare(b.location || ''));
+            break;
+        }
+        this.render();
+      },
+
+      closeYear() {
+        if (!confirm(`Close ${this.data.currentYear}?`)) return;
+        
+        this.saveState();
+        this.data.archivedYears[this.data.currentYear] = {
+          players: JSON.parse(JSON.stringify(this.data.players)),
+          nights: JSON.parse(JSON.stringify(this.data.nights))
+        };
+        this.data.nights = [];
+        this.data.currentYear = new Date().getFullYear();
+        this.saveData();
+        this.render();
+        alert(`Year ${this.data.currentYear - 1} closed!`);
+      },
+
+      showQRCode() {
+        const viewerUrl = 'https://vibeforlife.github.io/poker-tracker/poker-viewer.html';
+        
+        const canvas = document.getElementById('qrCanvas');
+        const ctx = canvas.getContext('2d');
+        const size = 300;
+        canvas.width = size;
+        canvas.height = size;
+        
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(viewerUrl)}`;
+        
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, size, size);
+        };
+        img.src = qrUrl;
+        
+        document.getElementById('qrModal').classList.add('active');
+      },
+
+      closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+      },
+
+      render() {
+        const playersList = document.getElementById('playersList');
+        if (playersList) {
+          playersList.innerHTML = this.data.players.map(p => `
+            <div class="player-item">
+              <div>
+                <strong>${p.name}</strong>
+                ${p.email ? `<div style="font-size: 0.9em; color: #aaa;">${p.email}</div>` : ''}
+              </div>
+            </div>
+          `).join('');
+        }
+
+        const nightsList = document.getElementById('nightsList');
+        if (nightsList) {
+          nightsList.innerHTML = this.data.nights.map(n => `
+            <div class="night-item">
+              <div class="night-header">
+                <div>
+                  <h3>${n.name}</h3>
+                  <div style="font-size: 0.9em; color: #aaa;">
+                    📅 ${n.date} ${n.time ? '• 🕐 ' + n.time : ''}
+                    ${n.location ? '<br>📍 ' + n.location : ''}
+                    <br>👥 ${n.attendees.length} attendees
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        const leaderboardList = document.getElementById('leaderboardList');
+        if (leaderboardList && this.data.nights.length > 0) {
+          const stats = this.getPlayerStats();
+          leaderboardList.innerHTML = stats.map((s, i) => `
+            <div class="player-item">
+              <div>
+                <strong>${i + 1}. ${s.name}</strong>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 1.2em; color: ${s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c'}">
+                  $${s.totalWinnings.toFixed(2)}
+                </div>
+                <div style="font-size: 0.9em; color: #aaa;">
+                  ${s.games} games
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      },
+
+      getPlayerStats() {
+        return this.data.players.map(player => {
+          const games = this.data.nights.filter(n => 
+            n.attendees.some(a => a.playerId === player.id)
+          ).length;
+          
+          const totalWinnings = this.data.nights.reduce((sum, night) => {
+            const attendee = night.attendees.find(a => a.playerId === player.id);
+            return sum + (attendee ? attendee.winnings : 0);
+          }, 0);
+
+          return {
+            id: player.id,
+            name: player.name,
+            games,
+            totalWinnings
+          };
+        }).sort((a, b) => b.totalWinnings - a.totalWinnings);
+      }
+    };
+
+    function saveToken() {
+      const token = document.getElementById('tokenInput').value.trim();
+      
+      if (!token || !token.startsWith('ghp_')) {
+        alert('Please enter a valid GitHub token (starts with ghp_)');
+        return;
+      }
+      
+      localStorage.setItem('github_token', token);
+      app.token = token;
+      app.init();
+    }
+
+    // Initialize app
+    app.init();
+  </script>
+</body>
+</html>
