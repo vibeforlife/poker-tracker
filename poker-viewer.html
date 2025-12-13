@@ -47,7 +47,7 @@
 <body>
   <div class="container">
     <h1>🃏 Fold and Furious Poker Tracker</h1>
-    <p class="subtitle">📖 Read-Only View</p>
+    <p class="subtitle">📖 Read-Only View • <button class="btn btn-secondary" onclick="refreshData()" style="display: inline-block; padding: 5px 15px; margin: 0;">🔄 Refresh</button></p>
 
     <div id="loadingState" class="loading">Loading poker data...</div>
     <div id="errorState" class="error" style="display: none;">Unable to load data. Please check connection.</div>
@@ -137,7 +137,9 @@
     var DATA_URL = 'https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker-data.json';
 
     function loadData() {
-      fetch(DATA_URL)
+      // Add cache-busting timestamp
+      var cacheBuster = '?t=' + new Date().getTime();
+      fetch(DATA_URL + cacheBuster)
         .then(function(response) {
           if (!response.ok) throw new Error('Failed to fetch');
           return response.json();
@@ -401,6 +403,13 @@
 
     function closeModal(id) {
       document.getElementById(id).classList.remove('active');
+    }
+
+    function refreshData() {
+      document.getElementById('loadingState').style.display = 'block';
+      document.getElementById('appContent').style.display = 'none';
+      document.getElementById('errorState').style.display = 'none';
+      loadData();
     }
 
     loadData();
