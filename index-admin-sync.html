@@ -957,15 +957,34 @@
                     <br>👥 ${n.attendees.length} attendees
                   </div>
                   ${n.notes ? `<div style="font-size: 0.9em; color: #aaa; margin-top: 5px; font-style: italic;">"${n.notes}"</div>` : ''}
-                  ${n.photoUrl ? `<img src="${n.photoUrl}" onclick="app.showPhoto('${n.photoUrl}')" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; cursor: pointer;">` : ''}
+                  ${n.photoUrl ? `<img src="${n.photoUrl}" data-action="show-photo" data-url="${n.photoUrl}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; cursor: pointer;">` : ''}
                 </div>
                 <div>
-                  <button class="btn btn-primary" onclick="app.editNight(${n.id})">Edit</button>
-                  <button class="btn btn-danger" onclick="app.deleteNight(${n.id})">Delete</button>
+                  <button class="btn btn-primary" data-action="edit-night" data-id="${n.id}">Edit</button>
+                  <button class="btn btn-danger" data-action="delete-night" data-id="${n.id}">Delete</button>
                 </div>
               </div>
             </div>
           `).join('');
+          
+          // Add event listeners
+          nightsList.querySelectorAll('[data-action="edit-night"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              this.editNight(parseInt(btn.dataset.id));
+            });
+          });
+          
+          nightsList.querySelectorAll('[data-action="delete-night"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              this.deleteNight(parseInt(btn.dataset.id));
+            });
+          });
+          
+          nightsList.querySelectorAll('[data-action="show-photo"]').forEach(img => {
+            img.addEventListener('click', () => {
+              this.showPhoto(img.dataset.url);
+            });
+          });
         }
         this.renderLeaderboard();
         this.populateYearSelectors();
