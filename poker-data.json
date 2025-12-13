@@ -62,7 +62,24 @@
       "date": "2025-12-14",
       "time": "20:00",
       "location": "Test location",
-      "attendees": [],
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598003121,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598007071,
+          "winnings": -20
+        }
+      ],
       "buyIn": 20
     },
     {
@@ -114,5 +131,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "7bfe47e181f687fc8b47c066d8040417113d7b93"
+  "sha": "38c0c915a80b39f3ff45362f4bcd8871b2d6df15"
 }
