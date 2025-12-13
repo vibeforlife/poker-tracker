@@ -6,269 +6,42 @@
   <title>Fold and Furious Poker Tracker - Viewer</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      color: #e4e4e4;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 2.5em;
-      background: linear-gradient(45deg, #f39c12, #e74c3c);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #aaa;
-      margin-bottom: 30px;
-      font-size: 0.9em;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .tab {
-      padding: 12px 24px;
-      background: #2a2a40;
-      border: none;
-      border-radius: 8px;
-      color: #e4e4e4;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 16px;
-    }
-
-    .tab:hover {
-      background: #3a3a50;
-    }
-
-    .tab.active {
-      background: linear-gradient(45deg, #f39c12, #e74c3c);
-      color: white;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .card {
-      background: #2a2a40;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    .leaderboard-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px;
-      background: #1a1a2e;
-      margin: 10px 0;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .leaderboard-item:hover {
-      background: #2a2a3e;
-      transform: translateX(5px);
-    }
-
-    .achievement {
-      display: inline-block;
-      padding: 5px 10px;
-      background: linear-gradient(45deg, #f39c12, #e74c3c);
-      border-radius: 20px;
-      margin: 5px;
-      font-size: 12px;
-      animation: pop 0.5s ease;
-    }
-
-    @keyframes pop {
-      0% { transform: scale(0); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-    }
-
-    .stat-card {
-      background: #1a1a2e;
-      padding: 15px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 2em;
-      font-weight: bold;
-      color: #f39c12;
-    }
-
-    .stat-label {
-      font-size: 0.9em;
-      color: #aaa;
-      margin-top: 5px;
-    }
-
-    .chart-container {
-      position: relative;
-      height: 300px;
-      margin: 20px 0;
-    }
-
-    .badge-card {
-      background: #1a1a2e;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    .badge-header {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-    }
-
-    .badge-players {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .badge-player-tag {
-      background: #2a2a40;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 0.9em;
-    }
-
-    .year-selector {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .modal.active {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-content {
-      background: #2a2a40;
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 600px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .btn {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.3s;
-      margin: 5px;
-    }
-
-    .btn-secondary {
-      background: #3a3a50;
-      color: #e4e4e4;
-    }
-
-    .btn-secondary:hover {
-      background: #4a4a60;
-    }
-
-    select {
-      padding: 10px;
-      border: 1px solid #3a3a50;
-      border-radius: 8px;
-      background: #1a1a2e;
-      color: #e4e4e4;
-      font-size: 14px;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 40px;
-      font-size: 1.2em;
-      color: #aaa;
-    }
-
-    .error {
-      text-align: center;
-      padding: 40px;
-      color: #e74c3c;
-    }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.8em;
-      }
-
-      .tabs {
-        justify-content: center;
-      }
-
-      .tab {
-        flex: 1;
-        min-width: 120px;
-      }
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e4e4e4; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 2.5em; background: linear-gradient(45deg, #f39c12, #e74c3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .subtitle { text-align: center; color: #aaa; margin-bottom: 30px; font-size: 0.9em; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+    .tab { padding: 12px 24px; background: #2a2a40; border: none; border-radius: 8px; color: #e4e4e4; cursor: pointer; transition: all 0.3s; font-size: 16px; }
+    .tab:hover { background: #3a3a50; }
+    .tab.active { background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .card { background: #2a2a40; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
+    .leaderboard-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a2e; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+    .leaderboard-item:hover { background: #2a2a3e; transform: translateX(5px); }
+    .achievement { display: inline-block; padding: 5px 10px; background: linear-gradient(45deg, #f39c12, #e74c3c); border-radius: 20px; margin: 5px; font-size: 12px; animation: pop 0.5s ease; }
+    @keyframes pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+    .stat-card { background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center; }
+    .stat-value { font-size: 2em; font-weight: bold; color: #f39c12; }
+    .stat-label { font-size: 0.9em; color: #aaa; margin-top: 5px; }
+    .chart-container { position: relative; height: 300px; margin: 20px 0; }
+    .badge-card { background: #1a1a2e; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+    .badge-header { font-size: 1.5em; margin-bottom: 10px; }
+    .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .badge-player-tag { background: #2a2a40; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
+    .year-selector { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
+    .modal.active { display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin: 5px; }
+    .btn-secondary { background: #3a3a50; color: #e4e4e4; }
+    .btn-secondary:hover { background: #4a4a60; }
+    select { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; }
+    .loading { text-align: center; padding: 40px; font-size: 1.2em; color: #aaa; }
+    .error { text-align: center; padding: 40px; color: #e74c3c; }
+    @media (max-width: 768px) { h1 { font-size: 1.8em; } .tabs { justify-content: center; } .tab { flex: 1; min-width: 120px; } }
   </style>
 </head>
 <body>
@@ -276,26 +49,21 @@
     <h1>🃏 Fold and Furious Poker Tracker</h1>
     <p class="subtitle">📖 Read-Only View</p>
 
-    <div id="loadingState" class="loading">
-      Loading poker data...
-    </div>
-
-    <div id="errorState" class="error" style="display: none;">
-      Unable to load data. Please check the data URL configuration.
-    </div>
+    <div id="loadingState" class="loading">Loading poker data...</div>
+    <div id="errorState" class="error" style="display: none;">Unable to load data. Please check connection.</div>
 
     <div id="appContent" style="display: none;">
       <div class="tabs">
-        <button class="tab active" onclick="viewer.switchTab('leaderboard')">Leaderboard</button>
-        <button class="tab" onclick="viewer.switchTab('charts')">Charts</button>
-        <button class="tab" onclick="viewer.switchTab('badges')">Badges</button>
-        <button class="tab" onclick="viewer.switchTab('lifetime')">Lifetime Stats</button>
+        <button class="tab active" onclick="switchTab('leaderboard')">Leaderboard</button>
+        <button class="tab" onclick="switchTab('charts')">Charts</button>
+        <button class="tab" onclick="switchTab('badges')">Badges</button>
+        <button class="tab" onclick="switchTab('lifetime')">Lifetime Stats</button>
       </div>
 
       <div id="leaderboard" class="tab-content active">
         <div class="year-selector">
           <label>View Year:</label>
-          <select id="leaderboardYearSelect" onchange="viewer.renderLeaderboard()">
+          <select id="leaderboardYearSelect" onchange="renderLeaderboard()">
             <option value="current">Current Year</option>
           </select>
         </div>
@@ -308,7 +76,7 @@
       <div id="charts" class="tab-content">
         <div class="year-selector">
           <label>View Year:</label>
-          <select id="chartsYearSelect" onchange="viewer.renderCharts()">
+          <select id="chartsYearSelect" onchange="renderCharts()">
             <option value="current">Current Year</option>
           </select>
         </div>
@@ -352,7 +120,6 @@
     </div>
   </div>
 
-  <!-- Player Profile Modal -->
   <div id="playerProfileModal" class="modal">
     <div class="modal-content">
       <h2 id="playerProfileName"></h2>
@@ -360,525 +127,283 @@
       <div class="chart-container">
         <canvas id="playerHistoryChart"></canvas>
       </div>
-      <button class="btn btn-secondary" onclick="viewer.closeModal('playerProfileModal')">Close</button>
+      <button class="btn btn-secondary" onclick="closeModal('playerProfileModal')">Close</button>
     </div>
   </div>
 
   <script>
-    const viewer = {
-      data: null,
-      charts: {},
-      
-      // CONFIGURATION: Reading directly from GitHub
-      DATA_URL: 'https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker-data.json'
+    var appData = null;
+    var charts = {};
+    var DATA_URL = 'https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker-data.json';
 
-      async init() {
-        await this.loadData();
-      },
-
-      async loadData() {
-        try {
-          const response = await fetch(this.DATA_URL);
-          if (!response.ok) throw new Error('Failed to fetch data');
-          
-          this.data = await response.json();
-          
+    function loadData() {
+      fetch(DATA_URL)
+        .then(function(response) {
+          if (!response.ok) throw new Error('Failed to fetch');
+          return response.json();
+        })
+        .then(function(data) {
+          appData = data;
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('appContent').style.display = 'block';
-          
-          this.populateYearSelectors();
-          this.renderLeaderboard();
-        } catch (error) {
-          console.error('Error loading data:', error);
+          populateYearSelectors();
+          renderLeaderboard();
+        })
+        .catch(function(error) {
+          console.error('Error:', error);
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('errorState').style.display = 'block';
-        }
-      },
-
-      populateYearSelectors() {
-        const years = Object.keys(this.data.archivedYears || {}).sort((a, b) => b - a);
-        
-        ['leaderboardYearSelect', 'chartsYearSelect'].forEach(selectId => {
-          const select = document.getElementById(selectId);
-          select.innerHTML = '<option value="current">Current Year (' + this.data.currentYear + ')</option>';
-          years.forEach(year => {
-            select.innerHTML += `<option value="${year}">${year}</option>`;
-          });
         });
-      },
+    }
 
-      getYearData(year) {
-        if (year === 'current') {
-          return { players: this.data.players, nights: this.data.nights };
-        }
-        return this.data.archivedYears[year] || { players: [], nights: [] };
-      },
-
-      switchTab(tab) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById(tab).classList.add('active');
-        
-        if (tab === 'charts') this.renderCharts();
-        if (tab === 'badges') this.renderBadges();
-        if (tab === 'lifetime') this.renderLifetimeStats();
-      },
-
-      getPlayerStats(yearData = null) {
-        const data = yearData || { players: this.data.players, nights: this.data.nights };
-        
-        return data.players.map(player => {
-          const games = data.nights.filter(n => 
-            n.attendees.some(a => a.playerId === player.id)
-          ).length;
-          
-          const totalWinnings = data.nights.reduce((sum, night) => {
-            const attendee = night.attendees.find(a => a.playerId === player.id);
-            return sum + (attendee ? attendee.winnings : 0);
-          }, 0);
-
-          const avgWinnings = games > 0 ? totalWinnings / games : 0;
-
-          return {
-            id: player.id,
-            name: player.name,
-            games,
-            totalWinnings,
-            avgWinnings
-          };
+    function populateYearSelectors() {
+      var years = Object.keys(appData.archivedYears || {}).sort(function(a, b) { return b - a; });
+      ['leaderboardYearSelect', 'chartsYearSelect'].forEach(function(selectId) {
+        var select = document.getElementById(selectId);
+        select.innerHTML = '<option value="current">Current Year (' + appData.currentYear + ')</option>';
+        years.forEach(function(year) {
+          select.innerHTML += '<option value="' + year + '">' + year + '</option>';
         });
-      },
+      });
+    }
 
-      getAchievements(stats, yearData = null) {
-        const achievements = [];
-        const data = yearData || { players: this.data.players, nights: this.data.nights };
-        const allStats = this.getPlayerStats(yearData);
-        const maxWinnings = Math.max(...allStats.map(s => s.totalWinnings));
-        const maxAvg = Math.max(...allStats.filter(s => s.games >= 10).map(s => s.avgWinnings));
-        
-        if (stats.totalWinnings === maxWinnings && maxWinnings > 0) {
-          achievements.push('🏆 Top Earner YTD');
-        }
-        
-        const playerNights = data.nights
-          .filter(n => n.attendees.some(a => a.playerId === stats.id))
-          .sort((a, b) => new Date(a.date) - new Date(b.date));
-        
-        let streak = 0;
-        let maxStreak = 0;
-        playerNights.forEach(night => {
-          const attendee = night.attendees.find(a => a.playerId === stats.id);
-          if (attendee.winnings > 0) {
-            streak++;
-            maxStreak = Math.max(maxStreak, streak);
-          } else {
-            streak = 0;
-          }
-        });
-        if (maxStreak >= 3) achievements.push('🔥 Hot Streak');
-        
-        const maxWin = Math.max(...playerNights.map(n => {
-          const a = n.attendees.find(at => at.playerId === stats.id);
-          return a ? a.winnings : -Infinity;
-        }), 0);
-        if (maxWin >= 100) achievements.push('💎 High Roller');
-        
-        let minRunning = 0;
-        let running = 0;
-        let maxComeback = 0;
-        playerNights.forEach(night => {
-          const attendee = night.attendees.find(a => a.playerId === stats.id);
-          running += attendee.winnings;
-          if (running < minRunning) minRunning = running;
-          maxComeback = Math.max(maxComeback, running - minRunning);
-        });
-        if (maxComeback >= 150) achievements.push('📈 Comeback Kid');
-        
-        if (stats.games >= 5) achievements.push('🎮 Regular Player');
-        if (stats.games >= 20) achievements.push('🌟 Veteran');
-        if (stats.games >= 50) achievements.push('💯 Half Century');
-        
-        if (data.nights.length > 0) {
-          const firstNight = [...data.nights].sort((a, b) => 
-            new Date(a.date) - new Date(b.date)
-          )[0];
-          if (firstNight.attendees.some(a => a.playerId === stats.id)) {
-            achievements.push('🌟 Founding Member');
+    function getYearData(year) {
+      if (year === 'current') return { players: appData.players, nights: appData.nights };
+      return appData.archivedYears[year] || { players: [], nights: [] };
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+      event.target.classList.add('active');
+      document.getElementById(tab).classList.add('active');
+      if (tab === 'charts') renderCharts();
+      if (tab === 'badges') renderBadges();
+      if (tab === 'lifetime') renderLifetimeStats();
+    }
+
+    function getPlayerStats(yearData) {
+      var data = yearData || { players: appData.players, nights: appData.nights };
+      return data.players.map(function(player) {
+        var games = data.nights.filter(function(n) {
+          return n.attendees.some(function(a) { return a.playerId === player.id; });
+        }).length;
+        var totalWinnings = data.nights.reduce(function(sum, night) {
+          var attendee = night.attendees.find(function(a) { return a.playerId === player.id; });
+          return sum + (attendee ? attendee.winnings : 0);
+        }, 0);
+        var avgWinnings = games > 0 ? totalWinnings / games : 0;
+        return { id: player.id, name: player.name, games: games, totalWinnings: totalWinnings, avgWinnings: avgWinnings };
+      });
+    }
+
+    function getAchievements(stats, yearData) {
+      var achievements = [];
+      var data = yearData || { players: appData.players, nights: appData.nights };
+      var allStats = getPlayerStats(yearData);
+      var maxWinnings = Math.max.apply(Math, allStats.map(function(s) { return s.totalWinnings; }));
+      if (stats.totalWinnings === maxWinnings && maxWinnings > 0) achievements.push('🏆 Top Earner YTD');
+      var playerNights = data.nights.filter(function(n) {
+        return n.attendees.some(function(a) { return a.playerId === stats.id; });
+      }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+      var streak = 0, maxStreak = 0;
+      playerNights.forEach(function(night) {
+        var attendee = night.attendees.find(function(a) { return a.playerId === stats.id; });
+        if (attendee.winnings > 0) { streak++; maxStreak = Math.max(maxStreak, streak); } else streak = 0;
+      });
+      if (maxStreak >= 3) achievements.push('🔥 Hot Streak');
+      var maxWin = Math.max.apply(Math, playerNights.map(function(n) {
+        var a = n.attendees.find(function(at) { return at.playerId === stats.id; });
+        return a ? a.winnings : -Infinity;
+      }).concat([0]));
+      if (maxWin >= 100) achievements.push('💎 High Roller');
+      if (stats.games >= 5) achievements.push('🎮 Regular Player');
+      if (stats.games >= 20) achievements.push('🌟 Veteran');
+      if (stats.games >= 50) achievements.push('💯 Half Century');
+      if (stats.totalWinnings >= 100) achievements.push('💵 $100 Club');
+      if (stats.totalWinnings >= 500) achievements.push('💎 $500 Club');
+      return achievements;
+    }
+
+    function showPlayerProfile(playerId) {
+      var player = appData.players.find(function(p) { return p.id === playerId; });
+      var stats = getPlayerStats().find(function(s) { return s.id === playerId; });
+      var achievements = getAchievements(stats);
+      document.getElementById('playerProfileName').textContent = player.name;
+      var content = document.getElementById('playerProfileContent');
+      content.innerHTML = '<div class="stats-grid">' +
+        '<div class="stat-card"><div class="stat-value">' + stats.games + '</div><div class="stat-label">Games Played</div></div>' +
+        '<div class="stat-card"><div class="stat-value">$' + stats.totalWinnings.toFixed(2) + '</div><div class="stat-label">Total Winnings</div></div>' +
+        '<div class="stat-card"><div class="stat-value">$' + stats.avgWinnings.toFixed(2) + '</div><div class="stat-label">Avg per Game</div></div>' +
+        '</div><h3>Achievements</h3><div>' +
+        achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('') +
+        (achievements.length === 0 ? '<p>No achievements yet</p>' : '') +
+        '</div><h3>Performance Over Time</h3>';
+      var history = appData.nights.filter(function(n) {
+        return n.attendees.some(function(a) { return a.playerId === playerId; });
+      }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); }).map(function(night) {
+        return { date: night.date, winnings: night.attendees.find(function(a) { return a.playerId === playerId; }).winnings };
+      });
+      var ctx = document.getElementById('playerHistoryChart');
+      if (charts.playerHistory) charts.playerHistory.destroy();
+      charts.playerHistory = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: history.map(function(h) { return h.date; }),
+          datasets: [{ label: 'Winnings', data: history.map(function(h) { return h.winnings; }), borderColor: '#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', tension: 0.4 }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+            x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
           }
         }
-        
-        if (stats.games >= 10 && stats.avgWinnings === maxAvg && maxAvg > 0) {
-          achievements.push('📊 Best Average');
-        }
-        
-        if (stats.games >= 10 && Math.abs(stats.totalWinnings) <= 50) {
-          achievements.push('⚖️ Balanced');
-        }
-        
-        if (stats.games >= 6) {
-          const monthlyTotals = {};
-          playerNights.forEach(night => {
-            const month = night.date.substring(0, 7);
-            if (!monthlyTotals[month]) monthlyTotals[month] = 0;
-            const attendee = night.attendees.find(a => a.playerId === stats.id);
-            monthlyTotals[month] += attendee.winnings;
-          });
-          const allPositive = Object.values(monthlyTotals).every(v => v > 0);
-          if (allPositive && Object.keys(monthlyTotals).length >= 3) {
-            achievements.push('💰 Profit Machine');
-          }
-        }
-        
-        if (stats.totalWinnings >= 100) achievements.push('💵 $100 Club');
-        if (stats.totalWinnings >= 500) achievements.push('💎 $500 Club');
-        
-        if (stats.games >= 10) {
-          const winnings = playerNights.map(n => {
-            const a = n.attendees.find(at => at.playerId === stats.id);
-            return a ? a.winnings : 0;
-          });
-          const mean = winnings.reduce((a, b) => a + b, 0) / winnings.length;
-          const variance = winnings.reduce((sum, w) => sum + Math.pow(w - mean, 2), 0) / winnings.length;
-          const stdDev = Math.sqrt(variance);
-          if (stdDev < 30) achievements.push('🎯 Consistent');
-          if (stdDev > 80) achievements.push('🃏 Wild Card');
-        }
-        
-        const uniqueOpponents = new Set();
-        playerNights.forEach(night => {
-          night.attendees.forEach(a => {
-            if (a.playerId !== stats.id) uniqueOpponents.add(a.playerId);
-          });
+      });
+      document.getElementById('playerProfileModal').classList.add('active');
+    }
+
+    function renderLeaderboard() {
+      var year = document.getElementById('leaderboardYearSelect').value;
+      var yearData = getYearData(year);
+      var stats = getPlayerStats(yearData).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+      var list = document.getElementById('leaderboardList');
+      list.innerHTML = stats.map(function(s, i) {
+        var achievements = getAchievements(s, yearData);
+        return '<div class="leaderboard-item" onclick="showPlayerProfile(' + s.id + ')">' +
+          '<div><strong>' + (i + 1) + '. ' + s.name + '</strong><div>' +
+          achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('') +
+          '</div></div><div style="text-align: right;">' +
+          '<div style="font-size: 1.5em; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.totalWinnings.toFixed(2) + '</div>' +
+          '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + s.avgWinnings.toFixed(2) + ' avg</div>' +
+          '</div></div>';
+      }).join('');
+    }
+
+    function renderCharts() {
+      var year = document.getElementById('chartsYearSelect').value;
+      var yearData = getYearData(year);
+      var stats = getPlayerStats(yearData).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+      var ctx1 = document.getElementById('totalWinningsChart');
+      if (charts.totalWinnings) charts.totalWinnings.destroy();
+      charts.totalWinnings = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: stats.map(function(s) { return s.name; }),
+          datasets: [{ label: 'Total Winnings', data: stats.map(function(s) { return s.totalWinnings; }), backgroundColor: stats.map(function(s) { return s.totalWinnings >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)'; }) }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
+      });
+      var ctx2 = document.getElementById('gamesPlayedChart');
+      if (charts.gamesPlayed) charts.gamesPlayed.destroy();
+      charts.gamesPlayed = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: stats.map(function(s) { return s.name; }),
+          datasets: [{ label: 'Games Played', data: stats.map(function(s) { return s.games; }), backgroundColor: 'rgba(243, 156, 18, 0.8)' }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
+      });
+      var ctx3 = document.getElementById('avgWinningsChart');
+      if (charts.avgWinnings) charts.avgWinnings.destroy();
+      charts.avgWinnings = new Chart(ctx3, {
+        type: 'line',
+        data: {
+          labels: stats.map(function(s) { return s.name; }),
+          datasets: [{ label: 'Average Winnings', data: stats.map(function(s) { return s.avgWinnings; }), borderColor: '#9b59b6', backgroundColor: 'rgba(155, 89, 182, 0.1)', tension: 0.4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
+      });
+    }
+
+    function renderBadges() {
+      var badgeDefs = [
+        { badge: '🏆 Top Earner YTD', description: 'Highest total winnings this year' },
+        { badge: '🔥 Hot Streak', description: '3+ wins in a row' },
+        { badge: '💎 High Roller', description: 'Single win of $100+' },
+        { badge: '🎮 Regular Player', description: '5+ games played' },
+        { badge: '🌟 Veteran', description: '20+ games played' },
+        { badge: '💯 Half Century', description: '50+ games played' },
+        { badge: '💵 $100 Club', description: '$100+ total winnings' },
+        { badge: '💎 $500 Club', description: '$500+ total winnings' }
+      ];
+      var stats = getPlayerStats();
+      var badgeHolders = {};
+      stats.forEach(function(s) {
+        var achievements = getAchievements(s);
+        achievements.forEach(function(badge) {
+          if (!badgeHolders[badge]) badgeHolders[badge] = [];
+          badgeHolders[badge].push(s.name);
         });
-        if (uniqueOpponents.size === data.players.length - 1 && data.players.length >= 5) {
-          achievements.push('🤝 Social Butterfly');
-        }
-        
-        return achievements;
-      },
+      });
+      var list = document.getElementById('badgesList');
+      list.innerHTML = badgeDefs.map(function(def) {
+        var holders = badgeHolders[def.badge] || [];
+        return '<div class="badge-card">' +
+          '<div class="badge-header">' + def.badge + '</div>' +
+          '<div style="color: #aaa; margin-bottom: 10px;">' + def.description + '</div>' +
+          '<div class="badge-players">' +
+          (holders.length > 0 ? holders.map(function(name) { return '<span class="badge-player-tag">' + name + '</span>'; }).join('') : '<span style="color: #888;">No players have earned this badge yet</span>') +
+          '</div></div>';
+      }).join('');
+    }
 
-      showPlayerProfile(playerId) {
-        const player = this.data.players.find(p => p.id === playerId);
-        const stats = this.getPlayerStats().find(s => s.id === playerId);
-        const achievements = this.getAchievements(stats);
-
-        document.getElementById('playerProfileName').textContent = player.name;
-        
-        const content = document.getElementById('playerProfileContent');
-        content.innerHTML = `
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-value">${stats.games}</div>
-              <div class="stat-label">Games Played</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">$${stats.totalWinnings.toFixed(2)}</div>
-              <div class="stat-label">Total Winnings</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">$${stats.avgWinnings.toFixed(2)}</div>
-              <div class="stat-label">Avg per Game</div>
-            </div>
-          </div>
-          <h3>Achievements</h3>
-          <div>
-            ${achievements.map(a => `<span class="achievement">${a}</span>`).join('')}
-            ${achievements.length === 0 ? '<p>No achievements yet</p>' : ''}
-          </div>
-          <h3>Performance Over Time</h3>
-        `;
-
-        const history = this.data.nights
-          .filter(n => n.attendees.some(a => a.playerId === playerId))
-          .sort((a, b) => new Date(a.date) - new Date(b.date))
-          .map(night => ({
-            date: night.date,
-            winnings: night.attendees.find(a => a.playerId === playerId).winnings
-          }));
-
-        const ctx = document.getElementById('playerHistoryChart');
-        if (this.charts.playerHistory) this.charts.playerHistory.destroy();
-        
-        this.charts.playerHistory = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: history.map(h => h.date),
-            datasets: [{
-              label: 'Winnings',
-              data: history.map(h => h.winnings),
-              borderColor: '#f39c12',
-              backgroundColor: 'rgba(243, 156, 18, 0.1)',
-              tension: 0.4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false }
-            },
-            scales: {
-              y: {
-                ticks: { color: '#e4e4e4' },
-                grid: { color: 'rgba(255, 255, 255, 0.1)' }
-              },
-              x: {
-                ticks: { color: '#e4e4e4' },
-                grid: { color: 'rgba(255, 255, 255, 0.1)' }
-              }
-            }
-          }
-        });
-
-        document.getElementById('playerProfileModal').classList.add('active');
-      },
-
-      renderLeaderboard() {
-        const year = document.getElementById('leaderboardYearSelect').value;
-        const yearData = this.getYearData(year);
-        const stats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
-        const list = document.getElementById('leaderboardList');
-        
-        list.innerHTML = stats.map((s, i) => {
-          const achievements = this.getAchievements(s, yearData);
-          return `
-            <div class="leaderboard-item" onclick="viewer.showPlayerProfile(${s.id})">
-              <div>
-                <strong>${i + 1}. ${s.name}</strong>
-                <div>${achievements.map(a => `<span class="achievement">${a}</span>`).join('')}</div>
-              </div>
-              <div style="text-align: right;">
-                <div style="font-size: 1.5em; color: ${s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c'}">
-                  $${s.totalWinnings.toFixed(2)}
-                </div>
-                <div style="font-size: 0.9em; color: #aaa;">
-                  ${s.games} games • $${s.avgWinnings.toFixed(2)} avg
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      },
-
-      renderCharts() {
-        const year = document.getElementById('chartsYearSelect').value;
-        const yearData = this.getYearData(year);
-        const stats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
-
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.totalWinnings) this.charts.totalWinnings.destroy();
-        this.charts.totalWinnings = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{
-              label: 'Total Winnings',
-              data: stats.map(s => s.totalWinnings),
-              backgroundColor: stats.map(s => s.totalWinnings >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)')
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-            }
-          }
-        });
-
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.gamesPlayed) this.charts.gamesPlayed.destroy();
-        this.charts.gamesPlayed = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{
-              label: 'Games Played',
-              data: stats.map(s => s.games),
-              backgroundColor: 'rgba(243, 156, 18, 0.8)'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-            }
-          }
-        });
-
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avgWinnings) this.charts.avgWinnings.destroy();
-        this.charts.avgWinnings = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{
-              label: 'Average Winnings',
-              data: stats.map(s => s.avgWinnings),
-              borderColor: '#9b59b6',
-              backgroundColor: 'rgba(155, 89, 182, 0.1)',
-              tension: 0.4
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-            }
-          }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefinitions = [
-          { badge: '🏆 Top Earner YTD', description: 'Highest total winnings this year' },
-          { badge: '🔥 Hot Streak', description: '3+ wins in a row' },
-          { badge: '💎 High Roller', description: 'Single win of $100+' },
-          { badge: '📈 Comeback Kid', description: 'Recovered $150+ from low point' },
-          { badge: '🎮 Regular Player', description: '5+ games played' },
-          { badge: '🌟 Veteran', description: '20+ games played' },
-          { badge: '💯 Half Century', description: '50+ games played' },
-          { badge: '🌟 Founding Member', description: 'Played in the first game' },
-          { badge: '📊 Best Average', description: 'Highest avg winnings (min 10 games)' },
-          { badge: '⚖️ Balanced', description: 'Within $50 of break-even (min 10 games)' },
-          { badge: '💰 Profit Machine', description: 'Positive every month for 3+ months' },
-          { badge: '💵 $100 Club', description: '$100+ total winnings' },
-          { badge: '💎 $500 Club', description: '$500+ total winnings' },
-          { badge: '🎯 Consistent', description: 'Low variance in results' },
-          { badge: '🃏 Wild Card', description: 'High variance in results' },
-          { badge: '🤝 Social Butterfly', description: 'Played with every other player' }
-        ];
-
-        const stats = this.getPlayerStats();
-        const badgeHolders = {};
-
-        stats.forEach(s => {
-          const achievements = this.getAchievements(s);
-          achievements.forEach(badge => {
-            if (!badgeHolders[badge]) badgeHolders[badge] = [];
-            badgeHolders[badge].push(s.name);
-          });
-        });
-
-        const list = document.getElementById('badgesList');
-        list.innerHTML = badgeDefinitions.map(def => {
-          const holders = badgeHolders[def.badge] || [];
-          return `
-            <div class="badge-card">
-              <div class="badge-header">${def.badge}</div>
-              <div style="color: #aaa; margin-bottom: 10px;">${def.description}</div>
-              <div class="badge-players">
-                ${holders.length > 0 
-                  ? holders.map(name => `<span class="badge-player-tag">${name}</span>`).join('') 
-                  : '<span style="color: #888;">No players have earned this badge yet</span>'}
-              </div>
-            </div>
-          `;
-        }).join('');
-      },
-
-      renderLifetimeStats() {
-        const lifetimeStats = {};
-        
-        this.data.players.forEach(player => {
-          lifetimeStats[player.id] = {
-            name: player.name,
-            totalGames: 0,
-            totalWinnings: 0,
-            years: {}
-          };
-        });
-
-        Object.keys(this.data.archivedYears || {}).forEach(year => {
-          const yearData = this.data.archivedYears[year];
-          const yearStats = this.getPlayerStats(yearData);
-          
-          yearStats.forEach(s => {
-            if (lifetimeStats[s.id]) {
-              lifetimeStats[s.id].totalGames += s.games;
-              lifetimeStats[s.id].totalWinnings += s.totalWinnings;
-              lifetimeStats[s.id].years[year] = {
-                games: s.games,
-                winnings: s.totalWinnings
-              };
-            }
-          });
-        });
-
-        const currentStats = this.getPlayerStats();
-        currentStats.forEach(s => {
+    function renderLifetimeStats() {
+      var lifetimeStats = {};
+      appData.players.forEach(function(player) {
+        lifetimeStats[player.id] = { name: player.name, totalGames: 0, totalWinnings: 0, years: {} };
+      });
+      Object.keys(appData.archivedYears || {}).forEach(function(year) {
+        var yearData = appData.archivedYears[year];
+        var yearStats = getPlayerStats(yearData);
+        yearStats.forEach(function(s) {
           if (lifetimeStats[s.id]) {
             lifetimeStats[s.id].totalGames += s.games;
             lifetimeStats[s.id].totalWinnings += s.totalWinnings;
-            lifetimeStats[s.id].years[this.data.currentYear] = {
-              games: s.games,
-              winnings: s.totalWinnings
-            };
+            lifetimeStats[s.id].years[year] = { games: s.games, winnings: s.totalWinnings };
           }
         });
+      });
+      var currentStats = getPlayerStats();
+      currentStats.forEach(function(s) {
+        if (lifetimeStats[s.id]) {
+          lifetimeStats[s.id].totalGames += s.games;
+          lifetimeStats[s.id].totalWinnings += s.totalWinnings;
+          lifetimeStats[s.id].years[appData.currentYear] = { games: s.games, winnings: s.totalWinnings };
+        }
+      });
+      var sortedLifetime = Object.values(lifetimeStats).filter(function(s) { return s.totalGames > 0; }).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+      var lifetimeList = document.getElementById('lifetimeLeaderboard');
+      lifetimeList.innerHTML = sortedLifetime.map(function(s, i) {
+        return '<div class="leaderboard-item">' +
+          '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>' +
+          '<div style="text-align: right;">' +
+          '<div style="font-size: 1.5em; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.totalWinnings.toFixed(2) + '</div>' +
+          '<div style="font-size: 0.9em; color: #aaa;">' + s.totalGames + ' lifetime games • $' + (s.totalWinnings / s.totalGames).toFixed(2) + ' avg</div>' +
+          '</div></div>';
+      }).join('');
+      var yearByYear = document.getElementById('yearByYearStats');
+      var years = Object.keys(appData.archivedYears || {}).concat([appData.currentYear.toString()]).sort(function(a, b) { return b - a; });
+      yearByYear.innerHTML = years.map(function(year) {
+        var yearData = year == appData.currentYear ? { players: appData.players, nights: appData.nights } : appData.archivedYears[year];
+        if (!yearData || !yearData.nights || yearData.nights.length === 0) return '';
+        var yearStats = getPlayerStats(yearData).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+        var topPlayer = yearStats[0];
+        return '<div class="card">' +
+          '<h3>' + year + (year == appData.currentYear ? ' (Current)' : '') + '</h3>' +
+          '<p>Games: ' + yearData.nights.length + '</p>' +
+          '<p>Top Player: ' + (topPlayer ? topPlayer.name + ' ($' + topPlayer.totalWinnings.toFixed(2) + ')' : 'N/A') + '</p>' +
+          '</div>';
+      }).join('');
+    }
 
-        const sortedLifetime = Object.values(lifetimeStats)
-          .filter(s => s.totalGames > 0)
-          .sort((a, b) => b.totalWinnings - a.totalWinnings);
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
 
-        const lifetimeList = document.getElementById('lifetimeLeaderboard');
-        lifetimeList.innerHTML = sortedLifetime.map((s, i) => `
-          <div class="leaderboard-item">
-            <div>
-              <strong>${i + 1}. ${s.name}</strong>
-            </div>
-            <div style="text-align: right;">
-              <div style="font-size: 1.5em; color: ${s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c'}">
-                $${s.totalWinnings.toFixed(2)}
-              </div>
-              <div style="font-size: 0.9em; color: #aaa;">
-                ${s.totalGames} lifetime games • $${(s.totalWinnings / s.totalGames).toFixed(2)} avg
-              </div>
-            </div>
-          </div>
-        `).join('');
-
-        const yearByYear = document.getElementById('yearByYearStats');
-        const years = [...new Set([...Object.keys(this.data.archivedYears || {}), this.data.currentYear.toString()])].sort((a, b) => b - a);
-        
-        yearByYear.innerHTML = years.map(year => {
-          const yearData = year == this.data.currentYear 
-            ? { players: this.data.players, nights: this.data.nights }
-            : this.data.archivedYears[year];
-          
-          if (!yearData || !yearData.nights || yearData.nights.length === 0) return '';
-          
-          const yearStats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
-          const topPlayer = yearStats[0];
-          
-          return `
-            <div class="card">
-              <h3>${year} ${year == this.data.currentYear ? '(Current)' : ''}</h3>
-              <p>Games: ${yearData.nights.length}</p>
-              <p>Top Player: ${topPlayer ? `${topPlayer.name} ($${topPlayer.totalWinnings.toFixed(2)})` : 'N/A'}</p>
-            </div>
-          `;
-        }).join('');
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      }
-    };
-
-    // Initialize viewer
-    (async function() {
-      await viewer.init();
-    })();
+    loadData();
   </script>
 </body>
 </html>
