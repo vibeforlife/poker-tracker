@@ -539,8 +539,8 @@
           <div class="checkbox-list" id="attendeeCheckboxes"></div>
           <h3>Results</h3>
           <div id="attendeeResults"></div>
-          <button class="btn btn-primary" onclick="app.saveNight(${id})">Save</button>
-          <button class="btn btn-secondary" onclick="app.calculateSettlement(${id})">Settlement</button>
+          <button class="btn btn-primary" data-action="save-night" data-id="${id}">Save</button>
+          <button class="btn btn-secondary" data-action="settlement" data-id="${id}">Settlement</button>
         `;
         const checkboxContainer = document.getElementById('attendeeCheckboxes');
         this.data.players.forEach(player => {
@@ -552,6 +552,19 @@
             </div>
           `;
         });
+        
+        // Add event listeners for the buttons
+        const saveBtn = content.querySelector('[data-action="save-night"]');
+        const settlementBtn = content.querySelector('[data-action="settlement"]');
+        
+        saveBtn.addEventListener('click', () => {
+          this.saveNight(parseInt(saveBtn.dataset.id));
+        });
+        
+        settlementBtn.addEventListener('click', () => {
+          this.calculateSettlement(parseInt(settlementBtn.dataset.id));
+        });
+        
         this.updateAttendeeResults(night);
         document.getElementById('editNightModal').classList.add('active');
       },
