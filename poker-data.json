@@ -131,6 +131,15 @@
       "buyIn": 20
     },
     {
+      "id": 1765667246958,
+      "name": "Test6",
+      "date": "2025-12-13",
+      "time": "19:00",
+      "location": "TestLocation",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1765598092758,
       "name": "Test 2025",
       "date": "2025-12-12",
@@ -179,5 +188,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "37d77c2912b04f92347782257f5aea892f014bff"
+  "sha": "314ff2de9a43d0670d14c4ac0ecb997163c1667c"
 }
