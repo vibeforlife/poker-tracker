@@ -1,5 +1,5 @@
 {
-  "name": "Poker Tracker Viewer",
+  "name": "Fold & Furious Viewer",
   "short_name": "Poker Stats",
   "description": "Fold and Furious Poker Tracker - Player View",
   "start_url": "./poker-viewer.html",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
