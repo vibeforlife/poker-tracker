@@ -369,12 +369,8 @@
       data: null,
       charts: {},
       
-      // CONFIGURATION: Set this to your data URL
-      // Options:
-      // 1. GitHub: 'https://raw.githubusercontent.com/username/repo/main/poker-data.json'
-      // 2. Google Drive: Get shareable link and convert to direct download link
-      // 3. Your own hosting: 'https://yourdomain.com/poker-data.json'
-      DATA_URL: './poker-data.json', // Default: same directory
+      // CONFIGURATION: Reading directly from GitHub
+      DATA_URL: 'https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker-data.json'
 
       async init() {
         await this.loadData();
@@ -880,7 +876,9 @@
     };
 
     // Initialize viewer
-    viewer.init();
+    (async function() {
+      await viewer.init();
+    })();
   </script>
 </body>
 </html>
