@@ -1,0 +1,54 @@
+{
+  "players": [
+    {
+      "id": 1765595931693,
+      "name": "Abbas",
+      "email": "abbasr@hotmail.com"
+    },
+    {
+      "id": 1765595941125,
+      "name": "MustafaN",
+      "email": ""
+    },
+    {
+      "id": 1765595948463,
+      "name": "MustafaD",
+      "email": ""
+    }
+  ],
+  "nights": [
+    {
+      "id": 1765596014010,
+      "name": "Dossajee night",
+      "date": "2026-01-22",
+      "time": "19:00",
+      "location": "Dossajee",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
+      "id": 1765595966135,
+      "name": "Rangwala",
+      "date": "2025-12-12",
+      "time": "19:00",
+      "location": "Rangwala",
+      "attendees": [
+        {
+          "playerId": 1765595931693,
+          "winnings": 60
+        },
+        {
+          "playerId": 1765595941125,
+          "winnings": -30
+        },
+        {
+          "playerId": 1765595948463,
+          "winnings": -30
+        }
+      ],
+      "buyIn": 20
+    }
+  ],
+  "archivedYears": {},
+  "currentYear": 2025
+}
