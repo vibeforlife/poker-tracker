@@ -344,8 +344,18 @@
       switchTab(tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById(tab).classList.add('active');
+        
+        // Find and activate the clicked tab
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(t => {
+          if (t.textContent.toLowerCase().includes(tab.toLowerCase())) {
+            t.classList.add('active');
+          }
+        });
+        
+        const contentEl = document.getElementById(tab);
+        if (contentEl) contentEl.classList.add('active');
+        
         if (tab === 'charts') this.renderCharts();
         if (tab === 'leaderboard') this.renderLeaderboard();
         if (tab === 'badges') this.renderBadges();
