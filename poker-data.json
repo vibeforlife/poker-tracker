@@ -1,49 +1,99 @@
 {
   "players": [
     {
-      "id": 1765595931693,
-      "name": "Abbas",
-      "email": "abbasr@hotmail.com"
+      "id": 1765597994627,
+      "name": "Asim",
+      "email": ""
     },
     {
-      "id": 1765595941125,
+      "id": 1765597999146,
+      "name": "Asif",
+      "email": ""
+    },
+    {
+      "id": 1765598003121,
+      "name": "Abbas",
+      "email": ""
+    },
+    {
+      "id": 1765598007071,
+      "name": "Farhan",
+      "email": ""
+    },
+    {
+      "id": 1765598011784,
+      "name": "Fakhshad",
+      "email": ""
+    },
+    {
+      "id": 1765598020314,
+      "name": "Murtaza",
+      "email": ""
+    },
+    {
+      "id": 1765598024250,
+      "name": "MustafaD",
+      "email": ""
+    },
+    {
+      "id": 1765598029607,
       "name": "MustafaN",
       "email": ""
     },
     {
-      "id": 1765595948463,
-      "name": "MustafaD",
+      "id": 1765598039735,
+      "name": "Sarferaz",
       "email": ""
     }
   ],
   "nights": [
     {
-      "id": 1765596014010,
-      "name": "Dossajee night",
+      "id": 1765598061305,
+      "name": "Jan",
       "date": "2026-01-22",
       "time": "19:00",
-      "location": "Dossajee",
+      "location": "Dossajee house",
       "attendees": [],
       "buyIn": 20
     },
     {
-      "id": 1765595966135,
-      "name": "Rangwala",
+      "id": 1765598092758,
+      "name": "Test 2025",
       "date": "2025-12-12",
       "time": "19:00",
-      "location": "Rangwala",
+      "location": "Mississauga",
       "attendees": [
         {
-          "playerId": 1765595931693,
-          "winnings": 60
+          "playerId": 1765597994627,
+          "winnings": 30
         },
         {
-          "playerId": 1765595941125,
-          "winnings": -30
+          "playerId": 1765597999146,
+          "winnings": 10
         },
         {
-          "playerId": 1765595948463,
-          "winnings": -30
+          "playerId": 1765598003121,
+          "winnings": 10
+        },
+        {
+          "playerId": 1765598007071,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598011784,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598020314,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598024250,
+          "winnings": 20
+        },
+        {
+          "playerId": 1765598029607,
+          "winnings": 10
         }
       ],
       "buyIn": 20
