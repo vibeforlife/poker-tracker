@@ -122,6 +122,9 @@
       <button class="tab" onclick="app.switchTab('charts')">Charts</button>
       <button class="tab" onclick="app.switchTab('badges')">Badges</button>
       <button class="tab" onclick="app.switchTab('lifetime')">Lifetime</button>
+      <button class="tab" onclick="app.switchTab('analytics')">Analytics</button>
+      <button class="tab" onclick="app.switchTab('gallery')">Gallery</button>
+      <button class="tab" onclick="app.switchTab('wrapped')">Wrapped</button>
     </div>
 
     <div id="nights" class="tab-content active">
@@ -479,6 +482,25 @@
             <div><label>Time:</label><input type="time" id="editNightTime" value="${night.time || '19:00'}"></div>
           </div>
           <label>Location:</label><input type="text" id="editNightLocation" value="${night.location || ''}">
+          <label>Notes:</label><textarea id="editNightNotes">${night.notes || ''}</textarea>
+          <label>Photo URL (optional):</label><input type="url" id="editNightPhoto" value="${night.photoUrl || ''}" placeholder="https://i.imgur.com/...">
+          ${night.photoUrl ? `<img src="${night.photoUrl}" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin: 10px 0;">` : ''}
+          
+          <div style="background: #1a1a2e; padding: 15px; border-radius: 8px; margin: 15px 0;">
+            <h3>💰 Expenses</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 10px 0;">
+              <div><label>Food $:</label><input type="number" id="expenseFood" value="${night.expenses?.food || 0}"></div>
+              <div><label>Drinks $:</label><input type="number" id="expenseDrinks" value="${night.expenses?.drinks || 0}"></div>
+              <div><label>Other $:</label><input type="number" id="expenseOther" value="${night.expenses?.other || 0}"></div>
+            </div>
+            <label>Paid by:</label>
+            <select id="expensePaidBy">
+              <option value="">Select player</option>
+              ${this.data.players.map(p => `<option value="${p.id}" ${night.expenses?.paidBy === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
+            </select>
+            <label>Expense Notes:</label><input type="text" id="expenseNotes" value="${night.expenses?.notes || ''}" placeholder="Pizza, beer, etc.">
+          </div>
+          
           <label>Buy-In:</label><input type="number" id="editBuyIn" value="${night.buyIn}">
           <h3>Attendees</h3>
           <input type="text" id="playerSearch" placeholder="Search..." onkeyup="app.filterPlayers()">
@@ -525,7 +547,24 @@
           `;
         });
         const total = night.attendees.reduce((sum, a) => sum + parseFloat(a.winnings || 0), 0);
-        resultsDiv.innerHTML += `<p><strong>Total: $${total.toFixed(2)}</strong></p>`;
+        resultsDiv.innerHTML += `<p><strong>Total: ${total.toFixed(2)}</strong></p>`;
+        
+        // Show expense split
+        if (night.expenses && (night.expenses.food > 0 || night.expenses.drinks > 0 || night.expenses.other > 0)) {
+          const totalExpenses = (night.expenses.food || 0) + (night.expenses.drinks || 0) + (night.expenses.other || 0);
+          const perPerson = night.attendees.length > 0 ? totalExpenses / night.attendees.length : 0;
+          const paidByPlayer = night.expenses.paidBy ? this.data.players.find(p => p.id === night.expenses.paidBy) : null;
+          if (paidByPlayer && night.attendees.length > 0) {
+            resultsDiv.innerHTML += `
+              <div style="font-size: 0.9em; color: #aaa; margin-top: 10px; padding-top: 10px; border-top: 1px solid #3a3a50;">
+                <strong>💰 Expenses:</strong> ${totalExpenses.toFixed(2)} total<br>
+                ${night.expenses.notes ? `<em>${night.expenses.notes}</em><br>` : ''}
+                Food: ${night.expenses.food} • Drinks: ${night.expenses.drinks} • Other: ${night.expenses.other}<br>
+                Each person owes ${paidByPlayer.name}: <strong>${perPerson.toFixed(2)}</strong>
+              </div>
+            `;
+          }
+        }
       },
 
       saveNight(id) {
@@ -581,12 +620,32 @@
           creditors.forEach(creditor => {
             if (remaining > 0 && creditor.balance > 0) {
               const amount = Math.min(remaining, creditor.balance);
-              transactions.push(`${debtor.player} pays ${creditor.player}: $${amount.toFixed(2)}`);
+              transactions.push(`${debtor.player} pays ${creditor.player}: ${amount.toFixed(2)}`);
               remaining -= amount;
               creditor.balance -= amount;
             }
           });
         });
+        
+        // Add expense settlement
+        if (night.expenses && night.expenses.paidBy && night.attendees.length > 0) {
+          const totalExpenses = (night.expenses.food || 0) + (night.expenses.drinks || 0) + (night.expenses.other || 0);
+          if (totalExpenses > 0) {
+            const perPerson = totalExpenses / night.attendees.length;
+            const paidByPlayer = this.data.players.find(p => p.id === night.expenses.paidBy);
+            transactions.push('');
+            transactions.push('<strong>💰 Expenses Settlement:</strong>');
+            transactions.push(`Total: ${totalExpenses.toFixed(2)} ${night.expenses.notes ? `(${night.expenses.notes})` : ''}`);
+            transactions.push('');
+            night.attendees.forEach(a => {
+              if (a.playerId !== night.expenses.paidBy) {
+                const player = this.data.players.find(p => p.id === a.playerId);
+                transactions.push(`${player.name} owes ${paidByPlayer.name}: ${perPerson.toFixed(2)}`);
+              }
+            });
+          }
+        }
+        
         document.getElementById('settlementContent').innerHTML = transactions.length > 0 ? transactions.join('<br>') : 'All settled!';
         document.getElementById('settlementModal').classList.add('active');
       },
@@ -860,6 +919,18 @@
         document.getElementById(id).classList.remove('active');
       },
 
+      showPhoto(url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.style.maxWidth = '100%';
+        img.style.borderRadius = '8px';
+        const modal = document.createElement('div');
+        modal.className = 'modal active';
+        modal.onclick = () => modal.remove();
+        modal.innerHTML = `<div class="modal-content" onclick="event.stopPropagation()"><img src="${url}" style="max-width: 100%; border-radius: 8px;"><button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="margin-top: 20px;">Close</button></div>`;
+        document.body.appendChild(modal);
+      },
+
       render() {
         const playersList = document.getElementById('playersList');
         if (playersList) {
@@ -885,6 +956,8 @@
                     ${n.location ? '<br>📍 ' + n.location : ''}
                     <br>👥 ${n.attendees.length} attendees
                   </div>
+                  ${n.notes ? `<div style="font-size: 0.9em; color: #aaa; margin-top: 5px; font-style: italic;">"${n.notes}"</div>` : ''}
+                  ${n.photoUrl ? `<img src="${n.photoUrl}" onclick="app.showPhoto('${n.photoUrl}')" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; cursor: pointer;">` : ''}
                 </div>
                 <div>
                   <button class="btn btn-primary" onclick="app.editNight(${n.id})">Edit</button>
