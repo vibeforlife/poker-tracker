@@ -1,5 +1,5 @@
 {
-  "name": "Poker Tracker Admin",
+  "name": "Fold & Furious Poker App",
   "short_name": "Poker Admin",
   "description": "Fold and Furious Poker Tracker - Admin Panel",
   "start_url": "./index-admin.html",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
