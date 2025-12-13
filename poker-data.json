@@ -89,7 +89,7 @@
         },
         {
           "playerId": 1765598024250,
-          "winnings": 20
+          "winnings": 30
         },
         {
           "playerId": 1765598029607,
@@ -100,5 +100,6 @@
     }
   ],
   "archivedYears": {},
-  "currentYear": 2025
+  "currentYear": 2025,
+  "sha": "d5e944636389decb77cd2314903d0561fef6dcc3"
 }
