@@ -60,7 +60,20 @@
       "location": "",
       "notes": "",
       "attendees": [],
-      "buyIn": 20
+      "buyIn": 20,
+      "expenses": {
+        "food": 50,
+        "drinks": 30,
+        "other": 20,
+        "paidBy": 1765597994627,
+        "splitAmong": [
+          1765597994627,
+          1765597999146,
+          1765598003121,
+          1765598007071
+        ],
+        "notes": ""
+      }
     },
     {
       "id": 1766145148005,
@@ -308,5 +321,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "0f1624c51dd7b848da58cdacf9419fd0d3b7ca8c"
+  "sha": "1a90f96cf70ae71e09e6fe701d783e9023c0aa65"
 }
