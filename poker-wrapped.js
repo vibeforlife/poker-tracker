@@ -25,16 +25,13 @@ if (typeof app === 'undefined') {
         nights = nights.concat(year.nights || []);
       });
       players = this.data.players;
-    } else if (period === 'ytd') {
-      // Year to date (current year only)
+    } else {
+      // YTD or specific year - just use current data
       nights = this.data.nights;
       players = this.data.players;
-    } else {
-      // Specific archived year
-      var yearData = this.data.archivedYears[period];
-      nights = yearData ? yearData.nights : [];
-      players = yearData ? yearData.players : this.data.players;
     }
+    
+    console.log('Using', nights.length, 'nights and', players.length, 'players');
     
     // Calculate stats for all players
     var allStats = players.map(function(player) {
@@ -218,6 +215,114 @@ if (typeof app === 'undefined') {
       html += '</div>';
       
       // Fun fact
+      var fortunes = [
+        "A bold bluff in your future will change the game. 🔮",
+        "The cards you fold today will lead to riches tomorrow. 🎴",
+        "Your next big win comes when you least expect it. ✨",
+        "Patience at the table brings fortune to the wise. 🧘",
+        "The river card holds secrets; trust your instincts. 🌊",
+        "Three of a kind approaches in your near future. 🎰",
+        "Your poker face will be tested soon—stay strong. 😎",
+        "A straight draw awaits; know when to chase it. 🎯",
+        "Fortune favors the aggressive player this month. 💪",
+        "Your nemesis will fall before year's end. ⚔️",
+        "The full house you seek is closer than you think. 🏠",
+        "Beware the trap of pocket aces—humility wins. 🃏",
+        "Your lucky seat is on the dealer's left. 🪑",
+        "A royal flush dances in your destiny. 👑",
+        "The best hand is the one you don't play. 🎭",
+        "Your chip stack grows with every folded ego. 📈",
+        "Bad beats today become lessons for tomorrow. 📚",
+        "The poker gods smile upon the patient. 😇",
+        "Your greatest victory comes from a conservative play. 🛡️",
+        "Trust the odds, but never ignore the reads. 🎲",
+        "The turn card will favor you in three games' time. 🔄",
+        "A small pot today prevents a big loss tomorrow. 🎯",
+        "Your biggest opponent is your own tilt. 🧠",
+        "The chips will flow back to the disciplined. 💎",
+        "A flush draw beckons, but kings lie in wait. ⚠️",
+        "Your fortune changes with the shuffle of cards. 🔀",
+        "The next session brings redemption for past losses. 🌅",
+        "Slow play will trap the aggressive this week. 🪤",
+        "Your reads sharpen with each hand observed. 👁️",
+        "The flop will favor suited connectors soon. 🎪",
+        "A cooler approaches—accept it with grace. ❄️",
+        "Your stack doubles when you trust your gut. 🎰",
+        "The button position is your friend tonight. 🔘",
+        "A stone-cold bluff will work in your favor soon. 🗿",
+        "Your continuation bet will be called—plan accordingly. 📞",
+        "The check-raise is a weapon; wield it wisely. ⚔️",
+        "Your range advantage grows with study. 📖",
+        "A hero call will define your next session. 🦸",
+        "The donkey bet will confuse and conquer. 🫏",
+        "Your implied odds are better than you think. 💭",
+        "A rainbow flop favors the prepared mind. 🌈",
+        "Your position speaks louder than your cards. 📍",
+        "The min-raise hides strength in your future. 💪",
+        "A limp will cost you dearly this month. 🚶",
+        "Your all-in will be met with a fold soon. 🎊",
+        "The nuts are not always what they seem. 🥜",
+        "Your equity realizes itself through aggression. ⚡",
+        "A set will crack your overpair—tread carefully. 💔",
+        "Your bankroll management ensures longevity. 💰",
+        "The bad run ends with discipline, not desperation. 🎯",
+        "Your next session favors early position raises. 🌄",
+        "A polarized range will serve you well tonight. ⚖️",
+        "Your value bets are too thin—size up! 📏",
+        "The semi-bluff is your path to profit. 🌓",
+        "Your opponents fear your tight image. 🔒",
+        "A loose table calls for patient value. 🎣",
+        "Your blockers matter more than you realize. 🚫",
+        "The ICM pressure will test your resolve. ⏰",
+        "Your fold equity increases with table image. 🖼️",
+        "A double barrel will take down the pot. 🎯",
+        "Your check-back induces a bluff tomorrow. 🎭",
+        "The iso-raise will isolate the fish perfectly. 🐟",
+        "Your 3-bet range needs more balance. ⚖️",
+        "A delayed c-bet will maximize value soon. ⏳",
+        "Your river decision makes or breaks the night. 🌊",
+        "The board texture favors your holdings tonight. 🎨",
+        "Your pot control will save chips this week. 🛡️",
+        "A float play will win you an unexpected pot. 🎈",
+        "Your squeeze play is coming—timing is key. 🤏",
+        "The overbet will get called; proceed with caution. ⚠️",
+        "Your hand reading improves with every showdown. 🔍",
+        "A block bet will save you from a tough decision. 🧱",
+        "Your probe bet will gather valuable information. 🔬",
+        "The donk bet will confuse your next opponent. 🎪",
+        "Your bet sizing tells a story—make it compelling. 📖",
+        "A merge range will balance your strategy. 🔀",
+        "Your c-bet frequency is predictable—mix it up! 🎲",
+        "The double-suited hand will hit harder than expected. 💥",
+        "Your gap concept needs refinement. 📐",
+        "A well-timed check will induce maximum value. ✅",
+        "Your aggression factor is your secret weapon. 🗡️",
+        "The suited ace will betray you—play cautiously. 🃏",
+        "Your continuation range is too wide; tighten up! 🎯",
+        "A runner-runner will save you when hope seems lost. 🏃",
+        "Your fold to 3-bet is too high—defend more! 🛡️",
+        "The pocket pair will set mine successfully tonight. ⛏️",
+        "Your steal attempts increase with stack depth. 📊",
+        "A polarizing river bet will get paid. 💸",
+        "Your opponents can't put you on a hand—good! 🎭",
+        "The suited connector will flop a monster soon. 🐉",
+        "Your GTO knowledge is a shield, not a sword. 🛡️",
+        "A leveling war approaches—stay one step ahead. 🧠",
+        "Your table selection matters more than card luck. 🎯",
+        "The rake will take its toll—play bigger pots! 💰",
+        "Your showdown value is underrated tonight. 💎",
+        "A crying call will be correct in your next session. 😢",
+        "Your range construction determines long-term success. 🏗️",
+        "The variance will even out—trust the process. 📈",
+        "Your mental game is your greatest asset. 🧘‍♂️",
+        "A cooler is coming; don't let it tilt you. 🧊",
+        "Your note-taking will pay dividends soon. 📝",
+        "The Friday night game will test your skills. 🌙",
+        "Your bankroll grows through smart game selection. 🎮"
+      ];
+      
+      var randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+      
       html += '<div style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px; margin: 20px 0; font-size: 1.2em;">';
       html += '<strong>🎲 Fun Fact:</strong> ';
       if (stats.games > 10) {
@@ -229,6 +334,13 @@ if (typeof app === 'undefined') {
       } else {
         html += 'Every game is a chance to improve. Keep grinding! 💪';
       }
+      html += '</div>';
+      
+      // Fortune cookie
+      html += '<div style="background: rgba(0,0,0,0.4); padding: 25px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3);">';
+      html += '<div style="text-align: center; font-size: 1.5em; margin-bottom: 10px;">🥠</div>';
+      html += '<p style="font-size: 1.1em; font-style: italic; text-align: center; line-height: 1.6;">' + randomFortune + '</p>';
+      html += '<p style="text-align: center; font-size: 0.9em; opacity: 0.6; margin-top: 15px;">— Ancient Poker Wisdom</p>';
       html += '</div>';
       
       html += '</div>';
