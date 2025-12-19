@@ -96,6 +96,7 @@
       <button class="tab" onclick="app.switchTab('leaderboard')">Leaderboard</button>
       <button class="tab" onclick="app.switchTab('charts')">Charts</button>
       <button class="tab" onclick="app.switchTab('badges')">Badges</button>
+      <button class="tab" onclick="app.switchTab('wrapped')">Wrapped</button>
       <button class="tab" onclick="app.switchTab('lifetime')">Lifetime</button>
     </div>
 
@@ -141,6 +142,28 @@
 
     <div id="badges" class="tab-content">
       <div class="card"><h2>🏅 All Badges</h2><div id="badgesList"></div></div>
+    </div>
+
+    <div id="wrapped" class="tab-content">
+      <div class="card">
+        <h2>🎁 Your Poker Wrapped</h2>
+        <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+          <div>
+            <label>Period:</label>
+            <select id="wrappedPeriod" onchange="app.renderWrapped()" style="width: auto; display: inline-block; margin-left: 10px;">
+              <option value="ytd">Year to Date</option>
+              <option value="lifetime">Lifetime</option>
+            </select>
+          </div>
+          <div>
+            <label>Player:</label>
+            <select id="wrappedPlayer" onchange="app.renderWrapped()" style="width: auto; display: inline-block; margin-left: 10px;">
+              <option value="">All Players</option>
+            </select>
+          </div>
+        </div>
+        <div id="wrappedContent"></div>
+      </div>
     </div>
 
     <div id="lifetime" class="tab-content">
@@ -310,6 +333,7 @@
         if (tab === 'leaderboard') this.renderLeaderboard();
         if (tab === 'badges') this.renderBadges();
         if (tab === 'lifetime') this.renderLifetimeStats();
+        if (tab === 'wrapped') this.renderWrapped();
       },
 
       addPlayer() {
@@ -735,6 +759,16 @@
           nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button></div></div></div>';
         });
         document.getElementById('nightsList').innerHTML = nightsHtml;
+        
+        // Populate wrapped player dropdown
+        var wrappedPlayerSelect = document.getElementById('wrappedPlayer');
+        if (wrappedPlayerSelect) {
+          wrappedPlayerSelect.innerHTML = '<option value="">All Players</option>';
+          this.data.players.forEach(p => {
+            wrappedPlayerSelect.innerHTML += '<option value="' + p.id + '">' + p.name + '</option>';
+          });
+        }
+        
         this.renderLeaderboard();
       }
     };
@@ -742,7 +776,8 @@
     app.init();
   </script>
   
-  <!-- Load enhancements (expense tracking, smart settlement) -->
+  <!-- Load enhancements -->
   <script src="poker-enhancements.js"></script>
+  <script src="poker-wrapped.js"></script>
 </body>
 </html>
