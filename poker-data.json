@@ -259,9 +259,19 @@
         ],
         "notes": ""
       }
+    },
+    {
+      "id": 1766145088311,
+      "name": "Asim house 1",
+      "date": "2025-12-19",
+      "time": "19:00",
+      "location": "",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "70340ca7d370cfa14ac5b62dae9fd02c55151ff5"
+  "sha": "4a0ee937207b220e78002a32a8af895ea5f260b9"
 }
