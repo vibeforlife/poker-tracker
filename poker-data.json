@@ -48,6 +48,16 @@
   ],
   "nights": [
     {
+      "id": 1766143862801,
+      "name": "Test 11",
+      "date": "2025-12-20",
+      "time": "19:00",
+      "location": "My house",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1766109215236,
       "name": "Test 2",
       "date": "2025-12-19",
@@ -196,5 +206,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "490f911048c7e8521abdca80442c4bf35aab6ffc"
+  "sha": "b31e865f8cd446a3796d0cdc892722c56ae8b46c"
 }
