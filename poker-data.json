@@ -53,6 +53,24 @@
   ],
   "nights": [
     {
+      "id": 1766147883239,
+      "name": "Exxpense night",
+      "date": "2025-12-27",
+      "time": "19:00",
+      "location": "",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
+    },
+    {
       "id": 1766145391556,
       "name": "Z night",
       "date": "2025-12-26",
@@ -337,5 +355,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "2870a07070dfa1191fa917a6b562809ec758560c"
+  "sha": "81c54b4d6027cef14129d000a1acb2071c224dfc"
 }
