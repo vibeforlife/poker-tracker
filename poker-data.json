@@ -53,11 +53,28 @@
       "date": "2025-12-18",
       "time": "20:00",
       "location": "My house",
-      "attendees": [],
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598003121,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598007071,
+          "winnings": -20
+        }
+      ],
       "buyIn": 20
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "1b72846e1bc73b2f4a67e1cca25767a2200ab581"
+  "sha": "4a0a8de928419b12a82320172f186fc90dfffb74"
 }
