@@ -76,6 +76,16 @@
       "buyIn": 20
     },
     {
+      "id": 1766144787794,
+      "name": "Dossajee house",
+      "date": "2025-12-20",
+      "time": "19:46",
+      "location": "Milton",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1766109215236,
       "name": "Test 2",
       "date": "2025-12-19",
@@ -224,5 +234,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "b1e0dcaada48fd46a12dc11ba1d85a3254ddeca0"
+  "sha": "3729e6a46f56d41dc4d847a1a280ffdfdb6f0bbe"
 }
