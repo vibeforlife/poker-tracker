@@ -53,6 +53,16 @@
   ],
   "nights": [
     {
+      "id": 1766145391556,
+      "name": "Z night",
+      "date": "2025-12-26",
+      "time": "19:00",
+      "location": "",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1766145148005,
       "name": "Yama house",
       "date": "2025-12-24",
@@ -288,5 +298,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "fdbf871410e557c63002d15d53c2a7d33500711f"
+  "sha": "f5ff6a5759702e9026c0d4d4a7b0a1a5ccf1ada8"
 }
