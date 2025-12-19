@@ -387,9 +387,10 @@ function renderWrapped() {
     var achievements = getAchievements(stats);
     var fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
     var fid = 'f' + stats.id;
+    var wrappedTitle = stats.name + ' Poker Wrapped';
     
     html += '<div style="background: linear-gradient(135deg, #f39c12, #e74c3c); padding: 40px; border-radius: 16px; margin: 20px 0; color: white; text-align: center;">';
-    html += '<h2 style="font-size: 2.5em; margin-bottom: 20px;">🎁 ' + stats.name + '\'s Poker Wrapped</h2>';
+    html += '<h2 style="font-size: 2.5em; margin-bottom: 20px;">🎁 ' + wrappedTitle + '</h2>';
     html += '<p style="font-size: 1.2em; margin-bottom: 30px;">' + (period === 'lifetime' ? 'All Time' : currentYear + ' YTD') + '</p>';
     html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">';
     html += '<div style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 12px;"><div style="font-size: 4em; font-weight: bold;">' + stats.games + '</div><div style="font-size: 1.2em;">Games</div></div>';
