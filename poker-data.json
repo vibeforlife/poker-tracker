@@ -46,8 +46,18 @@
       "email": ""
     }
   ],
-  "nights": [],
+  "nights": [
+    {
+      "id": 1766109215236,
+      "name": "Test 2",
+      "date": "2025-12-19",
+      "time": "21:00",
+      "location": "My house",
+      "attendees": [],
+      "buyIn": 20
+    }
+  ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "3e5d294d1368de617c78bd15b92161c6323652f2"
+  "sha": "db9f240923ef122117ab2076048e8656fa6929a3"
 }
