@@ -73,9 +73,19 @@
       ],
       "buyIn": 20,
       "notes": "This was a really wonderful game!"
+    },
+    {
+      "id": 1766111031714,
+      "name": "Adam night",
+      "date": "2025-12-19",
+      "time": "20:00",
+      "location": "Adam's room",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "befc063cddd70e06757bd317e094ffcf4b7a4077"
+  "sha": "e164b8b884665d9de37d3df5ae7f238e72311e79"
 }
