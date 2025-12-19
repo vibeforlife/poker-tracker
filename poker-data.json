@@ -71,8 +71,29 @@
       "date": "2025-12-18",
       "time": "19:00",
       "location": "",
-      "attendees": [],
-      "buyIn": 20
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598003121,
+          "winnings": -20
+        }
+      ],
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
     },
     {
       "id": 1765664847783,
@@ -214,5 +235,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "54376863eec2ff4aee63a04cae5073f1a8b618a2"
+  "sha": "a976745c1ee39cb3744a7a4901ed9f85674803ed"
 }
