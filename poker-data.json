@@ -48,23 +48,6 @@
   ],
   "nights": [
     {
-      "id": 1765667457572,
-      "name": "Test7",
-      "date": "2025-12-13",
-      "time": "21:09",
-      "location": "test7location",
-      "attendees": [],
-      "buyIn": 20,
-      "expenses": {
-        "food": 0,
-        "drinks": 0,
-        "other": 0,
-        "paidBy": null,
-        "splitAmong": [],
-        "notes": ""
-      }
-    },
-    {
       "id": 1765598092758,
       "name": "Test 2025",
       "date": "2025-12-12",
@@ -113,5 +96,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "0f8bbe6845168200923a4131c9cdda02942ceefd"
+  "sha": "bb82d781ace583c3769bae4eb62996799d5b0335"
 }
