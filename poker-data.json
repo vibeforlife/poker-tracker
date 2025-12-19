@@ -80,12 +80,29 @@
       "date": "2025-12-19",
       "time": "20:00",
       "location": "Adam's room",
-      "notes": "",
-      "attendees": [],
-      "buyIn": 20
+      "notes": "This was the best game ever!!!",
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -30
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -30
+        },
+        {
+          "playerId": 1765598003121,
+          "winnings": -30
+        },
+        {
+          "playerId": 1765598007071,
+          "winnings": -30
+        }
+      ],
+      "buyIn": 30
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "e164b8b884665d9de37d3df5ae7f238e72311e79"
+  "sha": "9341a021e4da31f493970cfc8ebf5370b8cc32b3"
 }
