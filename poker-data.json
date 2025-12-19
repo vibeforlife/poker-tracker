@@ -85,7 +85,7 @@
       "expenses": {
         "food": 50,
         "drinks": 30,
-        "other": 10,
+        "other": 20,
         "paidBy": 1765597994627,
         "splitAmong": [
           1765597994627,
@@ -362,5 +362,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "de153162143ed1e9a0287c53c8019a93be101cd5"
+  "sha": "11cd48050e6eb0ff38af3ac3f4ab2bca9e09bc89"
 }
