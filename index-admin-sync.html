@@ -123,9 +123,6 @@
       <button class="tab" onclick="app.switchTab('charts')">Charts</button>
       <button class="tab" onclick="app.switchTab('badges')">Badges</button>
       <button class="tab" onclick="app.switchTab('lifetime')">Lifetime</button>
-      <button class="tab" onclick="app.switchTab('analytics')">Analytics</button>
-      <button class="tab" onclick="app.switchTab('gallery')">Gallery</button>
-      <button class="tab" onclick="app.switchTab('wrapped')">Wrapped</button>
     </div>
 
     <div id="nights" class="tab-content active">
@@ -288,7 +285,7 @@
           } else if (response.status === 404) {
             await this.saveToGitHub();
           } else {
-            throw new Error('Failed to load');
+            throw new Error('Failed');
           }
         } catch (error) {
           console.error(error);
@@ -316,7 +313,7 @@
             this.updateSyncStatus('synced', 'Synced');
             localStorage.setItem('pokerTrackerData', JSON.stringify(this.data));
           } else {
-            throw new Error('Failed to save');
+            throw new Error('Failed');
           }
         } catch (error) {
           console.error(error);
@@ -344,18 +341,8 @@
       switchTab(tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        
-        // Find and activate the clicked tab
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(t => {
-          if (t.textContent.toLowerCase().includes(tab.toLowerCase())) {
-            t.classList.add('active');
-          }
-        });
-        
-        const contentEl = document.getElementById(tab);
-        if (contentEl) contentEl.classList.add('active');
-        
+        event.target.classList.add('active');
+        document.getElementById(tab).classList.add('active');
         if (tab === 'charts') this.renderCharts();
         if (tab === 'leaderboard') this.renderLeaderboard();
         if (tab === 'badges') this.renderBadges();
@@ -434,7 +421,7 @@
           this.saveData();
           this.render();
           this.populateYearSelectors();
-          alert(`Year closed!`);
+          alert('Year closed!');
         });
       },
 
@@ -485,15 +472,6 @@
 
       editNight(id) {
         const night = this.data.nights.find(n => n.id === id);
-        
-        // Ensure expenses object exists with splitAmong array
-        if (!night.expenses) {
-          night.expenses = { food: 0, drinks: 0, other: 0, paidBy: null, splitAmong: [], notes: '' };
-        }
-        if (!night.expenses.splitAmong) {
-          night.expenses.splitAmong = [];
-        }
-        
         const content = document.getElementById('editNightContent');
         content.innerHTML = `
           <label>Name:</label><input type="text" id="editNightName" value="${night.name || ''}">
@@ -502,45 +480,14 @@
             <div><label>Time:</label><input type="time" id="editNightTime" value="${night.time || '19:00'}"></div>
           </div>
           <label>Location:</label><input type="text" id="editNightLocation" value="${night.location || ''}">
-          <label>Notes:</label><textarea id="editNightNotes">${night.notes || ''}</textarea>
-          <label>Photo URL (optional):</label><input type="url" id="editNightPhoto" value="${night.photoUrl || ''}" placeholder="https://i.imgur.com/...">
-          ${night.photoUrl ? `<img src="${night.photoUrl}" style="max-width: 200px; max-height: 200px; border-radius: 8px; margin: 10px 0;">` : ''}
-          
-          <div style="background: #1a1a2e; padding: 15px; border-radius: 8px; margin: 15px 0;">
-            <h3>💰 Expenses</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 10px 0;">
-              <div><label>Food $:</label><input type="number" id="expenseFood" value="${night.expenses?.food || 0}"></div>
-              <div><label>Drinks $:</label><input type="number" id="expenseDrinks" value="${night.expenses?.drinks || 0}"></div>
-              <div><label>Other $:</label><input type="number" id="expenseOther" value="${night.expenses?.other || 0}"></div>
-            </div>
-            <label>Paid by:</label>
-            <select id="expensePaidBy">
-              <option value="">Select player</option>
-              ${this.data.players.map(p => `<option value="${p.id}" ${night.expenses?.paidBy === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
-            </select>
-            <label>Split among (select who should pay):</label>
-            <div style="max-height: 150px; overflow-y: auto; background: #2a2a40; padding: 10px; border-radius: 8px; margin: 10px 0;">
-              ${this.data.players.map(p => {
-                const checked = night.expenses?.splitAmong?.includes(p.id) || false;
-                return `
-                  <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0;">
-                    <input type="checkbox" id="expenseSplit_${p.id}" ${checked ? 'checked' : ''} style="width: auto; margin: 0;">
-                    <label for="expenseSplit_${p.id}" style="margin: 0;">${p.name}</label>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-            <label>Expense Notes:</label><input type="text" id="expenseNotes" value="${night.expenses?.notes || ''}" placeholder="Pizza, beer, etc.">
-          </div>
-          
           <label>Buy-In:</label><input type="number" id="editBuyIn" value="${night.buyIn}">
           <h3>Attendees</h3>
           <input type="text" id="playerSearch" placeholder="Search..." onkeyup="app.filterPlayers()">
           <div class="checkbox-list" id="attendeeCheckboxes"></div>
           <h3>Results</h3>
           <div id="attendeeResults"></div>
-          <button class="btn btn-primary" data-action="save-night" data-id="${id}">Save</button>
-          <button class="btn btn-secondary" data-action="settlement" data-id="${id}">Settlement</button>
+          <button class="btn btn-primary" onclick="app.saveNight(${id})">Save</button>
+          <button class="btn btn-secondary" onclick="app.calculateSettlement(${id})">Settlement</button>
         `;
         const checkboxContainer = document.getElementById('attendeeCheckboxes');
         this.data.players.forEach(player => {
@@ -552,19 +499,6 @@
             </div>
           `;
         });
-        
-        // Add event listeners for the buttons
-        const saveBtn = content.querySelector('[data-action="save-night"]');
-        const settlementBtn = content.querySelector('[data-action="settlement"]');
-        
-        saveBtn.addEventListener('click', () => {
-          this.saveNight(parseInt(saveBtn.dataset.id));
-        });
-        
-        settlementBtn.addEventListener('click', () => {
-          this.calculateSettlement(parseInt(settlementBtn.dataset.id));
-        });
-        
         this.updateAttendeeResults(night);
         document.getElementById('editNightModal').classList.add('active');
       },
@@ -592,24 +526,7 @@
           `;
         });
         const total = night.attendees.reduce((sum, a) => sum + parseFloat(a.winnings || 0), 0);
-        resultsDiv.innerHTML += `<p><strong>Total: ${total.toFixed(2)}</strong></p>`;
-        
-        // Show expense split
-        if (night.expenses && (night.expenses.food > 0 || night.expenses.drinks > 0 || night.expenses.other > 0)) {
-          const totalExpenses = (night.expenses.food || 0) + (night.expenses.drinks || 0) + (night.expenses.other || 0);
-          const perPerson = night.attendees.length > 0 ? totalExpenses / night.attendees.length : 0;
-          const paidByPlayer = night.expenses.paidBy ? this.data.players.find(p => p.id === night.expenses.paidBy) : null;
-          if (paidByPlayer && night.attendees.length > 0) {
-            resultsDiv.innerHTML += `
-              <div style="font-size: 0.9em; color: #aaa; margin-top: 10px; padding-top: 10px; border-top: 1px solid #3a3a50;">
-                <strong>💰 Expenses:</strong> ${totalExpenses.toFixed(2)} total<br>
-                ${night.expenses.notes ? `<em>${night.expenses.notes}</em><br>` : ''}
-                Food: ${night.expenses.food} • Drinks: ${night.expenses.drinks} • Other: ${night.expenses.other}<br>
-                Each person owes ${paidByPlayer.name}: <strong>${perPerson.toFixed(2)}</strong>
-              </div>
-            `;
-          }
-        }
+        resultsDiv.innerHTML += `<p><strong>Total: $${total.toFixed(2)}</strong></p>`;
       },
 
       saveNight(id) {
@@ -665,32 +582,12 @@
           creditors.forEach(creditor => {
             if (remaining > 0 && creditor.balance > 0) {
               const amount = Math.min(remaining, creditor.balance);
-              transactions.push(`${debtor.player} pays ${creditor.player}: ${amount.toFixed(2)}`);
+              transactions.push(`${debtor.player} pays ${creditor.player}: $${amount.toFixed(2)}`);
               remaining -= amount;
               creditor.balance -= amount;
             }
           });
         });
-        
-        // Add expense settlement
-        if (night.expenses && night.expenses.paidBy && night.attendees.length > 0) {
-          const totalExpenses = (night.expenses.food || 0) + (night.expenses.drinks || 0) + (night.expenses.other || 0);
-          if (totalExpenses > 0) {
-            const perPerson = totalExpenses / night.attendees.length;
-            const paidByPlayer = this.data.players.find(p => p.id === night.expenses.paidBy);
-            transactions.push('');
-            transactions.push('<strong>💰 Expenses Settlement:</strong>');
-            transactions.push(`Total: ${totalExpenses.toFixed(2)} ${night.expenses.notes ? `(${night.expenses.notes})` : ''}`);
-            transactions.push('');
-            night.attendees.forEach(a => {
-              if (a.playerId !== night.expenses.paidBy) {
-                const player = this.data.players.find(p => p.id === a.playerId);
-                transactions.push(`${player.name} owes ${paidByPlayer.name}: ${perPerson.toFixed(2)}`);
-              }
-            });
-          }
-        }
-        
         document.getElementById('settlementContent').innerHTML = transactions.length > 0 ? transactions.join('<br>') : 'All settled!';
         document.getElementById('settlementModal').classList.add('active');
       },
@@ -699,10 +596,12 @@
         const years = Object.keys(this.data.archivedYears || {}).sort((a, b) => b - a);
         ['leaderboardYearSelect', 'chartsYearSelect'].forEach(selectId => {
           const select = document.getElementById(selectId);
-          select.innerHTML = '<option value="current">Current (' + this.data.currentYear + ')</option>';
-          years.forEach(year => {
-            select.innerHTML += `<option value="${year}">${year}</option>`;
-          });
+          if (select) {
+            select.innerHTML = '<option value="current">Current (' + this.data.currentYear + ')</option>';
+            years.forEach(year => {
+              select.innerHTML += `<option value="${year}">${year}</option>`;
+            });
+          }
         });
       },
 
@@ -792,7 +691,7 @@
       },
 
       renderLeaderboard() {
-        const year = document.getElementById('leaderboardYearSelect').value;
+        const year = document.getElementById('leaderboardYearSelect')?.value || 'current';
         const yearData = this.getYearData(year);
         const stats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
         const list = document.getElementById('leaderboardList');
@@ -814,9 +713,10 @@
       },
 
       renderCharts() {
-        const year = document.getElementById('chartsYearSelect').value;
+        const year = document.getElementById('chartsYearSelect')?.value || 'current';
         const yearData = this.getYearData(year);
         const stats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
+        
         const ctx1 = document.getElementById('totalWinningsChart');
         if (this.charts.totalWinnings) this.charts.totalWinnings.destroy();
         this.charts.totalWinnings = new Chart(ctx1, {
@@ -825,34 +725,20 @@
             labels: stats.map(s => s.name),
             datasets: [{ label: 'Total Winnings', data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)') }]
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-            }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
         });
+        
         const ctx2 = document.getElementById('gamesPlayedChart');
         if (this.charts.gamesPlayed) this.charts.gamesPlayed.destroy();
         this.charts.gamesPlayed = new Chart(ctx2, {
           type: 'bar',
           data: {
             labels: stats.map(s => s.name),
-            datasets: [{ label: 'Games Played', data: stats.map(s => s.games), backgroundColor: 'rgba(243, 156, 18, 0.8)' }]
+            datasets: [{ label: 'Games', data: stats.map(s => s.games), backgroundColor: 'rgba(243, 156, 18, 0.8)' }]
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-            }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
         });
+        
         const ctx3 = document.getElementById('avgWinningsChart');
         if (this.charts.avgWinnings) this.charts.avgWinnings.destroy();
         this.charts.avgWinnings = new Chart(ctx3, {
@@ -861,15 +747,7 @@
             labels: stats.map(s => s.name),
             datasets: [{ label: 'Average', data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', backgroundColor: 'rgba(155, 89, 182, 0.1)', tension: 0.4 }]
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-              x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-            }
-          }
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
         });
       },
 
@@ -964,18 +842,6 @@
         document.getElementById(id).classList.remove('active');
       },
 
-      showPhoto(url) {
-        const img = document.createElement('img');
-        img.src = url;
-        img.style.maxWidth = '100%';
-        img.style.borderRadius = '8px';
-        const modal = document.createElement('div');
-        modal.className = 'modal active';
-        modal.onclick = () => modal.remove();
-        modal.innerHTML = `<div class="modal-content" onclick="event.stopPropagation()"><img src="${url}" style="max-width: 100%; border-radius: 8px;"><button class="btn btn-secondary" onclick="this.closest('.modal').remove()" style="margin-top: 20px;">Close</button></div>`;
-        document.body.appendChild(modal);
-      },
-
       render() {
         const playersList = document.getElementById('playersList');
         if (playersList) {
@@ -1001,35 +867,14 @@
                     ${n.location ? '<br>📍 ' + n.location : ''}
                     <br>👥 ${n.attendees.length} attendees
                   </div>
-                  ${n.notes ? `<div style="font-size: 0.9em; color: #aaa; margin-top: 5px; font-style: italic;">"${n.notes}"</div>` : ''}
-                  ${n.photoUrl ? `<img src="${n.photoUrl}" data-action="show-photo" data-url="${n.photoUrl}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 10px; cursor: pointer;">` : ''}
                 </div>
                 <div>
-                  <button class="btn btn-primary" data-action="edit-night" data-id="${n.id}">Edit</button>
-                  <button class="btn btn-danger" data-action="delete-night" data-id="${n.id}">Delete</button>
+                  <button class="btn btn-primary" onclick="app.editNight(${n.id})">Edit</button>
+                  <button class="btn btn-danger" onclick="app.deleteNight(${n.id})">Delete</button>
                 </div>
               </div>
             </div>
           `).join('');
-          
-          // Add event listeners
-          nightsList.querySelectorAll('[data-action="edit-night"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-              this.editNight(parseInt(btn.dataset.id));
-            });
-          });
-          
-          nightsList.querySelectorAll('[data-action="delete-night"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-              this.deleteNight(parseInt(btn.dataset.id));
-            });
-          });
-          
-          nightsList.querySelectorAll('[data-action="show-photo"]').forEach(img => {
-            img.addEventListener('click', () => {
-              this.showPhoto(img.dataset.url);
-            });
-          });
         }
         this.renderLeaderboard();
         this.populateYearSelectors();
