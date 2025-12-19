@@ -129,17 +129,16 @@
   <script>
     var appData = null;
     var charts = {};
-    var DATA_URL = 'https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker-data.json';
+    var DATA_URL = 'https://api.github.com/repos/vibeforlife/poker-tracker/contents/poker-data.json?ref=main';
 
     function loadData() {
-      var cacheBuster = '?t=' + new Date().getTime();
-      fetch(DATA_URL + cacheBuster)
+      fetch(DATA_URL)
         .then(function(response) {
           if (!response.ok) throw new Error('Failed');
           return response.json();
         })
-        .then(function(data) {
-          appData = data;
+        .then(function(file) {
+          appData = JSON.parse(atob(file.content));
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('appContent').style.display = 'block';
           renderNights();
