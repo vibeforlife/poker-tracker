@@ -53,6 +53,16 @@
   ],
   "nights": [
     {
+      "id": 1766145148005,
+      "name": "Yama house",
+      "date": "2025-12-24",
+      "time": "19:00",
+      "location": "",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1766144994056,
       "name": "Nooruddin house",
       "date": "2025-12-21",
@@ -278,5 +288,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "ffc541b14c240de9b7c0f801e5191cc901854fbd"
+  "sha": "fdbf871410e557c63002d15d53c2a7d33500711f"
 }
