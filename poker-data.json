@@ -48,45 +48,6 @@
   ],
   "nights": [
     {
-      "id": 1765666289312,
-      "name": "Test 3",
-      "date": "2025-12-13",
-      "time": "19:00",
-      "location": "",
-      "attendees": [],
-      "buyIn": 20
-    },
-    {
-      "id": 1765666937752,
-      "name": "Test5",
-      "date": "2025-12-13",
-      "time": "19:00",
-      "location": "",
-      "attendees": [
-        {
-          "playerId": 1765597994627,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765597999146,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598003121,
-          "winnings": 80
-        },
-        {
-          "playerId": 1765598007071,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598011784,
-          "winnings": -20
-        }
-      ],
-      "buyIn": 20
-    },
-    {
       "id": 1765667246958,
       "name": "Test6",
       "date": "2025-12-13",
@@ -161,5 +122,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "f1ee30fa56e84e4263a9437ca23504adcbf3dd11"
+  "sha": "cc54c9e20df4812d555059763783aaf590396e47"
 }
