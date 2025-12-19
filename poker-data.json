@@ -267,11 +267,16 @@
       "time": "19:00",
       "location": "",
       "notes": "",
-      "attendees": [],
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -20
+        }
+      ],
       "buyIn": 20
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "4a0ee937207b220e78002a32a8af895ea5f260b9"
+  "sha": "ffc541b14c240de9b7c0f801e5191cc901854fbd"
 }
