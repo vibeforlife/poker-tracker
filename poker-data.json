@@ -54,7 +54,20 @@
       "time": "19:00",
       "location": "My house",
       "notes": "",
-      "attendees": [],
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765598003121,
+          "winnings": -20
+        }
+      ],
       "buyIn": 20
     },
     {
@@ -206,5 +219,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "b31e865f8cd446a3796d0cdc892722c56ae8b46c"
+  "sha": "e66b3a0f052096dba5324ac581ecd0024e7596a4"
 }
