@@ -114,6 +114,8 @@ if (typeof app === 'undefined') {
       };
     }).filter(function(s) { return s.games > 0; });
     
+    console.log('All stats calculated:', allStats);
+    
     // Sort by total winnings for ranking
     allStats.sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
     
@@ -124,13 +126,17 @@ if (typeof app === 'undefined') {
     
     statsToShow.forEach(function(stats, index) {
       var rank = allStats.findIndex(function(s) { return s.id === stats.id; }) + 1;
-      var achievements = app.getAchievements(stats, period === 'ytd' ? null : { players: players, nights: nights });
+      var currentYear = app.data.currentYear || new Date().getFullYear();
+      
+      // Get achievements - need to pass proper yearData structure
+      var yearData = { players: players, nights: nights };
+      var achievements = app.getAchievements ? app.getAchievements(stats, yearData) : [];
       
       // Create wrapped card
       html += '<div style="background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%); padding: 40px; border-radius: 16px; margin: 20px 0; box-shadow: 0 8px 20px rgba(0,0,0,0.4); color: white; text-align: center;">';
       
       html += '<h2 style="font-size: 2.5em; margin-bottom: 20px;">🎁 ' + stats.name + "'s Poker Wrapped</h2>";
-      html += '<p style="font-size: 1.2em; opacity: 0.9; margin-bottom: 30px;">' + (period === 'lifetime' ? 'All Time' : period === 'ytd' ? this.data.currentYear + ' Year to Date' : period) + '</p>';
+      html += '<p style="font-size: 1.2em; opacity: 0.9; margin-bottom: 30px;">' + (period === 'lifetime' ? 'All Time' : period === 'ytd' ? currentYear + ' Year to Date' : period) + '</p>';
       
       // Stats grid
       html += '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 30px 0;">';
@@ -334,13 +340,13 @@ if (typeof app === 'undefined') {
       } else {
         html += 'Every game is a chance to improve. Keep grinding! 💪';
       }
+      // Fortune cookie (interactive)
+      var fortuneId = 'fortune_' + stats.id + '_' + Math.random().toString(36).substr(2, 9);
+      html += '<div id="' + fortuneId + '" style="background: rgba(0,0,0,0.4); padding: 40px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3); cursor: pointer; transition: all 0.3s;" onclick="openFortuneCookie(\'' + fortuneId + '\', \'' + randomFortune.replace(/'/g, "\\'") + '\')">';
+      html += '<div style="text-align: center;">';
+      html += '<div style="font-size: 5em; margin-bottom: 10px; transition: transform 0.3s;" class="cookie-icon">🥠</div>';
+      html += '<p style="font-size: 1.2em; opacity: 0.8;">Click to open your fortune cookie</p>';
       html += '</div>';
-      
-      // Fortune cookie
-      html += '<div style="background: rgba(0,0,0,0.4); padding: 25px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3);">';
-      html += '<div style="text-align: center; font-size: 1.5em; margin-bottom: 10px;">🥠</div>';
-      html += '<p style="font-size: 1.1em; font-style: italic; text-align: center; line-height: 1.6;">' + randomFortune + '</p>';
-      html += '<p style="text-align: center; font-size: 0.9em; opacity: 0.6; margin-top: 15px;">— Ancient Poker Wisdom</p>';
       html += '</div>';
       
       html += '</div>';
@@ -360,6 +366,46 @@ if (typeof app === 'undefined') {
   app.shareWrapped = function() {
     // For now, just show an alert. In future, could generate image
     alert('Share feature coming soon! Take a screenshot to share your stats.');
+  };
+  
+  // Fortune cookie opening animation
+  window.openFortuneCookie = function(fortuneId, fortune) {
+    var container = document.getElementById(fortuneId);
+    if (!container) return;
+    
+    // Add crack animation
+    container.style.cursor = 'default';
+    container.onclick = null;
+    
+    var cookieIcon = container.querySelector('.cookie-icon');
+    
+    // Shake animation
+    cookieIcon.style.animation = 'shake 0.5s ease';
+    
+    setTimeout(function() {
+      // Break open animation
+      cookieIcon.style.transform = 'scale(1.5) rotate(20deg)';
+      cookieIcon.style.opacity = '0';
+      
+      setTimeout(function() {
+        // Show fortune with grand reveal
+        container.innerHTML = '<div style="animation: fortuneReveal 0.8s ease;">' +
+          '<div style="text-align: center; font-size: 3em; margin-bottom: 20px;">✨</div>' +
+          '<p style="font-size: 1.3em; font-style: italic; text-align: center; line-height: 1.8; color: #ffd700; text-shadow: 0 2px 10px rgba(255,215,0,0.3);">' + fortune + '</p>' +
+          '<p style="text-align: center; font-size: 1em; opacity: 0.7; margin-top: 20px;">— Ancient Poker Wisdom</p>' +
+          '<div style="text-align: center; font-size: 2em; margin-top: 20px; opacity: 0.3;">🎴 ♠️ ♥️ ♦️ ♣️ 🎴</div>' +
+          '</div>';
+        
+        // Add CSS for animations if not already added
+        if (!document.getElementById('fortuneAnimationStyles')) {
+          var style = document.createElement('style');
+          style.id = 'fortuneAnimationStyles';
+          style.textContent = '@keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }' +
+            '@keyframes fortuneReveal { 0% { opacity: 0; transform: scale(0.5) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }';
+          document.head.appendChild(style);
+        }
+      }, 500);
+    }, 500);
   };
   
   console.log('✅ Poker Wrapped loaded successfully!');
