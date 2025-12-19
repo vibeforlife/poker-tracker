@@ -135,6 +135,16 @@
       "buyIn": 20
     },
     {
+      "id": 1766146159476,
+      "name": "1223",
+      "date": "2025-12-20",
+      "time": "19:00",
+      "location": "",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1766109215236,
       "name": "Test 2",
       "date": "2025-12-19",
@@ -298,5 +308,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "f5ff6a5759702e9026c0d4d4a7b0a1a5ccf1ada8"
+  "sha": "0f1624c51dd7b848da58cdacf9419fd0d3b7ca8c"
 }
