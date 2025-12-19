@@ -28,6 +28,8 @@
     .btn-secondary { background: #3a3a50; color: #e4e4e4; }
     .btn-danger { background: #e74c3c; color: white; }
     input, select, textarea { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; width: 100%; margin: 5px 0; }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     textarea { min-height: 80px; resize: vertical; font-family: inherit; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
     .modal.active { display: flex; align-items: center; justify-content: center; }
