@@ -149,16 +149,19 @@
       "attendees": [],
       "buyIn": 20,
       "expenses": {
-        "food": 0,
+        "food": 100,
         "drinks": 0,
         "other": 0,
-        "paidBy": null,
-        "splitAmong": [],
+        "paidBy": 1765597994627,
+        "splitAmong": [
+          1765597994627,
+          1765597999146
+        ],
         "notes": ""
       }
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "c9febee776d0431b99ed25cf445d58277338e319"
+  "sha": "ca9e33062e12db5b26fb189b4091eb6c25eb5b8e"
 }
