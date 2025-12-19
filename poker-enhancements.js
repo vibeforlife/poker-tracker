@@ -124,14 +124,21 @@
   // Override saveNight to save expenses
   const originalSaveNight = app.saveNight;
   app.saveNight = function(id) {
+    console.log('Enhanced saveNight called with id:', id);
+    
     this.saveState();
     const night = this.data.nights.find(n => n.id === id);
+    
+    console.log('Night found:', night);
+    
     night.name = document.getElementById('editNightName').value.trim() || 'Poker Night';
     night.date = document.getElementById('editNightDate').value;
     night.time = document.getElementById('editNightTime').value || '19:00';
     night.location = document.getElementById('editNightLocation').value.trim();
     night.notes = document.getElementById('editNightNotes').value.trim();
     night.buyIn = parseFloat(document.getElementById('editBuyIn').value) || 20;
+    
+    console.log('Basic fields saved');
     
     // Save expenses
     const splitAmong = [];
@@ -140,14 +147,20 @@
       if (checkbox && checkbox.checked) splitAmong.push(player.id);
     });
     
+    console.log('Split among:', splitAmong);
+    console.log('Food element:', document.getElementById('expenseFood'));
+    console.log('Food value:', document.getElementById('expenseFood')?.value);
+    
     night.expenses = {
-      food: parseFloat(document.getElementById('expenseFood').value) || 0,
-      drinks: parseFloat(document.getElementById('expenseDrinks').value) || 0,
-      other: parseFloat(document.getElementById('expenseOther').value) || 0,
-      paidBy: parseInt(document.getElementById('expensePaidBy').value) || null,
+      food: parseFloat(document.getElementById('expenseFood')?.value) || 0,
+      drinks: parseFloat(document.getElementById('expenseDrinks')?.value) || 0,
+      other: parseFloat(document.getElementById('expenseOther')?.value) || 0,
+      paidBy: parseInt(document.getElementById('expensePaidBy')?.value) || null,
       splitAmong: splitAmong,
-      notes: document.getElementById('expenseNotes').value.trim()
+      notes: document.getElementById('expenseNotes')?.value.trim() || ''
     };
+    
+    console.log('Expenses saved:', night.expenses);
     
     const selectedIds = [];
     this.data.players.forEach(player => {
@@ -160,7 +173,11 @@
       }
     });
     night.attendees = night.attendees.filter(a => selectedIds.includes(a.playerId));
+    
+    console.log('About to save data...');
     this.saveData();
+    
+    console.log('Updating attendee results...');
     this.updateAttendeeResults(night);
   };
 
