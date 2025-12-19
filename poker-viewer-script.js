@@ -389,7 +389,7 @@ function renderWrapped() {
     var fid = 'f' + stats.id;
     
     html += '<div style="background: linear-gradient(135deg, #f39c12, #e74c3c); padding: 40px; border-radius: 16px; margin: 20px 0; color: white; text-align: center;">';
-    html += '<h2 style="font-size: 2.5em; margin-bottom: 20px;">🎁 ' + stats.name + "'s Poker Wrapped</h2>";
+    html += '<h2 style="font-size: 2.5em; margin-bottom: 20px;">🎁 ' + stats.name + '\'s Poker Wrapped</h2>';
     html += '<p style="font-size: 1.2em; margin-bottom: 30px;">' + (period === 'lifetime' ? 'All Time' : currentYear + ' YTD') + '</p>';
     html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0;">';
     html += '<div style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 12px;"><div style="font-size: 4em; font-weight: bold;">' + stats.games + '</div><div style="font-size: 1.2em;">Games</div></div>';
@@ -408,7 +408,7 @@ function renderWrapped() {
     html += '<h3 style="margin-bottom: 15px;">🏆 Achievements</h3>';
     html += achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('');
     html += '</div>';
-    html += '<div id="' + fid + '" style="background: rgba(0,0,0,0.4); padding: 40px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3); cursor: pointer;" onclick="openCookie(\'' + fid + '\', \'' + fortune.replace(/'/g, "\\'") + '\')">';
+    html += '<div id="' + fid + '" style="background: rgba(0,0,0,0.4); padding: 40px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3); cursor: pointer;" onclick="openCookie(\'' + fid + '\', \'' + fortune.replace(/'/g, '') + '\')">';
     html += '<div style="font-size: 5em; text-align: center;">🥠</div><p style="text-align: center; margin-top: 10px;">Click for your fortune</p></div></div>';
   });
   
@@ -421,7 +421,7 @@ function openCookie(id, fortune) {
   c.onclick = null;
   c.style.animation = 'shake 0.5s';
   setTimeout(function() {
-    c.innerHTML = '<div style="animation: reveal 0.8s;"><div style="font-size: 3em; text-align: center;">✨</div><p style="font-size: 1.3em; font-style: italic; text-align: center; color: #ffd700; margin: 20px 0;">' + fortune + '</p><p style="text-align: center; opacity: 0.7;">— Ancient Poker Wisdom</p></div>';
+    c.innerHTML = '<div style="animation: reveal 0.8s;"><div style="font-size: 3em; text-align: center;">✨</div><p style="font-size: 1.3em; font-style: italic; text-align: center; color: gold; margin: 20px 0;">' + fortune + '</p><p style="text-align: center; opacity: 0.7;">— Ancient Poker Wisdom</p></div>';
     if (!document.getElementById('anim')) {
       var s = document.createElement('style');
       s.id = 'anim';
