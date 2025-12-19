@@ -48,15 +48,6 @@
   ],
   "nights": [
     {
-      "id": 1765667246958,
-      "name": "Test6",
-      "date": "2025-12-13",
-      "time": "19:00",
-      "location": "TestLocation",
-      "attendees": [],
-      "buyIn": 20
-    },
-    {
       "id": 1765667457572,
       "name": "Test7",
       "date": "2025-12-13",
@@ -122,5 +113,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "cc54c9e20df4812d555059763783aaf590396e47"
+  "sha": "0f8bbe6845168200923a4131c9cdda02942ceefd"
 }
