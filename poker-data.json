@@ -59,7 +59,16 @@
       "time": "20:49",
       "location": "Mississauga",
       "notes": "",
-      "attendees": [],
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -20
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -20
+        }
+      ],
       "buyIn": 20
     },
     {
@@ -244,5 +253,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "ab3970ab594aa75a767ebe64e5213c366f3efe73"
+  "sha": "984c86017bbb23fcaf06eba802309f3f4200fade"
 }
