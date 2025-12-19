@@ -28,17 +28,24 @@
     .btn-secondary { background: #3a3a50; color: #e4e4e4; }
     .btn-danger { background: #e74c3c; color: white; }
     input, select, textarea { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; width: 100%; margin: 5px 0; }
+    input[type="date"]::-webkit-calendar-picker-indicator,
+    input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
     textarea { min-height: 80px; resize: vertical; font-family: inherit; }
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
     .modal.active { display: flex; align-items: center; justify-content: center; }
     .modal-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
     .top-controls { display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .player-item, .night-item { background: #1a1a2e; padding: 15px; border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
-    .player-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; transition: all 0.3s; }
+    
+    .item-card { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: all 0.3s; }
+    .item-card:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    
+    .player-item { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
     .player-item:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
-    .night-item { transition: all 0.3s; }
+    
+    .night-item { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: all 0.3s; }
     .night-item:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
     .night-header { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px; }
+    
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
     .checkbox-list { max-height: 300px; overflow-y: auto; margin: 10px 0; }
     .checkbox-item { padding: 10px; background: #1a1a2e; margin: 5px 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -46,6 +53,20 @@
     .checkbox-item input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; }
     .attendee-input { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; margin: 10px 0; }
     .notes-display { font-size: 0.9em; color: #aaa; margin-top: 8px; font-style: italic; padding: 8px; background: #2a2a40; border-radius: 6px; }
+    
+    .achievement { display: inline-block; padding: 5px 10px; background: linear-gradient(45deg, #f39c12, #e74c3c); border-radius: 20px; margin: 5px; font-size: 12px; animation: pop 0.5s ease; }
+    @keyframes pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    
+    .badge-card { background: linear-gradient(135deg, #2a2a40 0%, #1a1a2e 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #f39c12; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); transition: transform 0.3s; }
+    .badge-card:hover { transform: translateX(5px); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); }
+    .badge-header { font-size: 2em; margin-bottom: 15px; }
+    .badge-desc { color: #bbb; font-size: 1.1em; margin-bottom: 15px; }
+    .badge-divider { height: 1px; background: linear-gradient(90deg, transparent, #f39c12, transparent); margin: 15px 0; }
+    .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .badge-player-tag { background: linear-gradient(45deg, #3a3a50, #2a2a40); padding: 8px 16px; border-radius: 20px; font-size: 0.95em; border: 1px solid #4a4a60; transition: all 0.3s; }
+    .badge-player-tag:hover { background: linear-gradient(45deg, #4a4a60, #3a3a50); transform: scale(1.05); }
+    .badge-empty { color: #666; font-style: italic; }
+    
     @media (max-width: 768px) { .form-row, .attendee-input { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -90,12 +111,10 @@
         <button class="btn btn-primary" onclick="app.addNight()">Add Night</button>
       </div>
       <div class="card">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-secondary" onclick="app.sortNights('newest')">Newest</button>
-          <button class="btn btn-secondary" onclick="app.sortNights('oldest')">Oldest</button>
-          <button class="btn btn-secondary" onclick="app.sortNights('name')">Name</button>
-          <button class="btn btn-secondary" onclick="app.sortNights('location')">Location</button>
-        </div>
+        <button class="btn btn-secondary" onclick="app.sortNights('newest')">Newest</button>
+        <button class="btn btn-secondary" onclick="app.sortNights('oldest')">Oldest</button>
+        <button class="btn btn-secondary" onclick="app.sortNights('name')">Name</button>
+        <button class="btn btn-secondary" onclick="app.sortNights('location')">Location</button>
       </div>
       <div id="nightsList"></div>
     </div>
@@ -115,18 +134,18 @@
     </div>
 
     <div id="charts" class="tab-content">
-      <div class="card"><h2>Total Winnings</h2><div class="chart-container"><canvas id="totalWinningsChart"></canvas></div></div>
-      <div class="card"><h2>Games Played</h2><div class="chart-container"><canvas id="gamesPlayedChart"></canvas></div></div>
-      <div class="card"><h2>Average Winnings</h2><div class="chart-container"><canvas id="avgWinningsChart"></canvas></div></div>
+      <div class="card"><h2>Total Winnings</h2><div style="height: 300px; position: relative;"><canvas id="totalWinningsChart"></canvas></div></div>
+      <div class="card"><h2>Games Played</h2><div style="height: 300px; position: relative;"><canvas id="gamesPlayedChart"></canvas></div></div>
+      <div class="card"><h2>Average Winnings</h2><div style="height: 300px; position: relative;"><canvas id="avgWinningsChart"></canvas></div></div>
     </div>
 
     <div id="badges" class="tab-content">
-      <div class="card"><h2>🏅 Badges</h2><div id="badgesList"></div></div>
+      <div class="card"><h2>🏅 All Badges</h2><div id="badgesList"></div></div>
     </div>
 
     <div id="lifetime" class="tab-content">
       <div class="card"><h2>🌟 Lifetime Leaderboard</h2><div id="lifetimeLeaderboard"></div></div>
-      <div class="card"><h2>Year by Year</h2><div id="yearByYearStats"></div></div>
+      <div class="card"><h2>📅 Year by Year</h2><div id="yearByYearStats"></div></div>
     </div>
   </div>
 
@@ -199,8 +218,6 @@
           if (token && token.startsWith('ghp_')) {
             localStorage.setItem('github_token', token);
             this.token = token;
-          } else {
-            alert('Invalid token. Using local storage only.');
           }
         }
         if (this.token) {
@@ -224,17 +241,13 @@
         this.updateSyncStatus('syncing', 'Loading...');
         try {
           const url = 'https://api.github.com/repos/vibeforlife/poker-tracker/contents/poker-data.json?ref=main';
-          const response = await fetch(url, {
-            headers: { 'Authorization': 'token ' + this.token }
-          });
+          const response = await fetch(url, { headers: { 'Authorization': 'token ' + this.token }});
           if (response.ok) {
             const file = await response.json();
             this.data = JSON.parse(atob(file.content));
             this.data.sha = file.sha;
             this.updateSyncStatus('synced', 'Synced');
             localStorage.setItem('pokerTrackerData', JSON.stringify(this.data));
-          } else {
-            throw new Error('Load failed');
           }
         } catch (error) {
           this.updateSyncStatus('error', 'Failed');
@@ -255,10 +268,9 @@
         this.updateSyncStatus('syncing', 'Saving...');
         try {
           const content = btoa(JSON.stringify(this.data, null, 2));
-          const url = 'https://api.github.com/repos/vibeforlife/poker-tracker/contents/poker-data.json';
           const body = { message: 'Update poker data', content, branch: 'main' };
           if (this.data.sha) body.sha = this.data.sha;
-          const response = await fetch(url, {
+          const response = await fetch('https://api.github.com/repos/vibeforlife/poker-tracker/contents/poker-data.json', {
             method: 'PUT',
             headers: { 'Authorization': 'token ' + this.token, 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -401,18 +413,14 @@
         if (!night.notes) night.notes = '';
         
         let html = '<label>Name:</label><input type="text" id="editNightName" value="' + night.name + '">';
-        html += '<div class="form-row">';
-        html += '<div><label>Date:</label><input type="date" id="editNightDate" value="' + night.date + '"></div>';
-        html += '<div><label>Time:</label><input type="time" id="editNightTime" value="' + (night.time || '19:00') + '"></div>';
-        html += '</div>';
+        html += '<div class="form-row"><div><label>Date:</label><input type="date" id="editNightDate" value="' + night.date + '"></div>';
+        html += '<div><label>Time:</label><input type="time" id="editNightTime" value="' + (night.time || '19:00') + '"></div></div>';
         html += '<label>Location:</label><input type="text" id="editNightLocation" value="' + (night.location || '') + '">';
-        html += '<label>Notes:</label><textarea id="editNightNotes" placeholder="Add notes about this game...">' + night.notes + '</textarea>';
+        html += '<label>Notes:</label><textarea id="editNightNotes" placeholder="Add notes...">' + night.notes + '</textarea>';
         html += '<label>Buy-In:</label><input type="number" id="editBuyIn" value="' + night.buyIn + '">';
-        html += '<h3>Attendees</h3>';
-        html += '<input type="text" id="playerSearch" placeholder="Search..." onkeyup="app.filterPlayers()">';
+        html += '<h3>Attendees</h3><input type="text" id="playerSearch" placeholder="Search..." onkeyup="app.filterPlayers()">';
         html += '<div class="checkbox-list" id="attendeeCheckboxes"></div>';
-        html += '<h3>Results</h3>';
-        html += '<div id="attendeeResults"></div>';
+        html += '<h3>Results</h3><div id="attendeeResults"></div>';
         html += '<button class="btn btn-primary" onclick="app.saveNight(' + id + ')">Save</button>';
         html += '<button class="btn btn-secondary" onclick="app.calculateSettlement(' + id + ')">Settlement</button>';
         
@@ -423,8 +431,7 @@
           const checked = night.attendees.some(a => a.playerId === player.id);
           const div = document.createElement('div');
           div.className = 'checkbox-item';
-          div.innerHTML = '<label for="player_' + player.id + '">' + player.name + '</label>' +
-            '<input type="checkbox" id="player_' + player.id + '" ' + (checked ? 'checked' : '') + '>';
+          div.innerHTML = '<label for="player_' + player.id + '">' + player.name + '</label><input type="checkbox" id="player_' + player.id + '" ' + (checked ? 'checked' : '') + '>';
           checkboxContainer.appendChild(div);
         });
         
@@ -445,11 +452,9 @@
         night.attendees.forEach(attendee => {
           const player = this.data.players.find(p => p.id === attendee.playerId);
           if (!player) return;
-          html += '<div class="attendee-input">';
-          html += '<span>' + player.name + '</span>';
+          html += '<div class="attendee-input"><span>' + player.name + '</span>';
           html += '<input type="number" value="' + attendee.winnings + '" onchange="app.updateWinnings(' + night.id + ', ' + attendee.playerId + ', this.value)">';
-          html += '<button class="btn btn-danger" onclick="app.removeAttendee(' + night.id + ', ' + attendee.playerId + ')">Remove</button>';
-          html += '</div>';
+          html += '<button class="btn btn-danger" onclick="app.removeAttendee(' + night.id + ', ' + attendee.playerId + ')">Remove</button></div>';
         });
         const total = night.attendees.reduce((sum, a) => sum + parseFloat(a.winnings || 0), 0);
         html += '<p><strong>Total: $' + total.toFixed(2) + '</strong></p>';
@@ -571,18 +576,10 @@
         document.getElementById('playerProfileName').textContent = player.name;
         
         let html = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">';
-        html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;">';
-        html += '<div style="font-size: 2em; font-weight: bold; color: #f39c12;">' + stats.games + '</div>';
-        html += '<div style="font-size: 0.9em; color: #aaa;">Games</div></div>';
-        html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;">';
-        html += '<div style="font-size: 2em; font-weight: bold; color: #f39c12;">$' + stats.totalWinnings.toFixed(2) + '</div>';
-        html += '<div style="font-size: 0.9em; color: #aaa;">Total</div></div>';
-        html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;">';
-        html += '<div style="font-size: 2em; font-weight: bold; color: #f39c12;">$' + stats.avgWinnings.toFixed(2) + '</div>';
-        html += '<div style="font-size: 0.9em; color: #aaa;">Avg</div></div>';
-        html += '</div><h3>Achievements</h3><div>';
-        html += achievements.map(a => '<span class="achievement">' + a + '</span>').join('');
-        html += '</div>';
+        html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;"><div style="font-size: 2em; font-weight: bold; color: #f39c12;">' + stats.games + '</div><div style="font-size: 0.9em; color: #aaa;">Games</div></div>';
+        html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;"><div style="font-size: 2em; font-weight: bold; color: #f39c12;">$' + stats.totalWinnings.toFixed(2) + '</div><div style="font-size: 0.9em; color: #aaa;">Total</div></div>';
+        html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;"><div style="font-size: 2em; font-weight: bold; color: #f39c12;">$' + stats.avgWinnings.toFixed(2) + '</div><div style="font-size: 0.9em; color: #aaa;">Avg</div></div>';
+        html += '</div><h3>Achievements</h3><div>' + achievements.map(a => '<span class="achievement">' + a + '</span>').join('') + '</div>';
         
         document.getElementById('playerProfileContent').innerHTML = html;
         document.getElementById('playerProfileModal').classList.add('active');
@@ -593,313 +590,12 @@
         let html = '';
         stats.forEach((s, i) => {
           const achievements = this.getAchievements(s);
-          html += '<div class="player-item" onclick="app.showPlayerProfile(' + s.id + ')" style="cursor: pointer; margin-bottom: 15px;">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong><div style="margin-top: 5px;">';
+          html += '<div class="item-card" onclick="app.showPlayerProfile(' + s.id + ')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">';
+          html += '<div><strong style="font-size: 1.1em;">' + (i + 1) + '. ' + s.name + '</strong><div style="margin-top: 5px;">';
           html += achievements.map(a => '<span class="achievement">' + a + '</span>').join('');
-          html += '</div></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="player-item" style="margin-bottom: 15px;">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.totalWinnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • 
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.avgWinnings.toFixed(2) + ' avg</div>';
+          html += '</div></div><div style="text-align: right;">';
+          html += '<div style="font-size: 1.5em; font-weight: bold; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.totalWinnings.toFixed(2) + '</div>';
+          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + s.avgWinnings.toFixed(2) + ' avg</div>';
           html += '</div></div>';
         });
         document.getElementById('leaderboardList').innerHTML = html;
@@ -907,37 +603,25 @@
 
       renderCharts() {
         const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
         const ctx1 = document.getElementById('totalWinningsChart');
         if (this.charts.total) this.charts.total.destroy();
         this.charts.total = new Chart(ctx1, {
           type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
+          data: { labels: stats.map(s => s.name), datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]},
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
-        
         const ctx2 = document.getElementById('gamesPlayedChart');
         if (this.charts.games) this.charts.games.destroy();
         this.charts.games = new Chart(ctx2, {
           type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
+          data: { labels: stats.map(s => s.name), datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]},
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
-        
         const ctx3 = document.getElementById('avgWinningsChart');
         if (this.charts.avg) this.charts.avg.destroy();
         this.charts.avg = new Chart(ctx3, {
           type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
+          data: { labels: stats.map(s => s.name), datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]},
           options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
       },
@@ -962,28 +646,23 @@
           });
         });
         let html = '';
-        badgeDefs.forEach((def, index) => {
+        badgeDefs.forEach(def => {
           const names = holders[def.badge] || [];
           html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
           html += '<div class="badge-header">' + def.badge + '</div>';
           html += '<div class="badge-desc">' + def.desc + '</div>';
           html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
+          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned</div>';
           html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
+          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one yet. Be the first!</span>';
           html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
         });
         document.getElementById('badgesList').innerHTML = html;
       },
 
       renderLifetimeStats() {
         const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
+        this.data.players.forEach(p => { lifetime[p.id] = { name: p.name, games: 0, winnings: 0 }; });
         
         Object.values(this.data.archivedYears || {}).forEach(year => {
           this.getPlayerStats(year).forEach(s => {
@@ -1004,419 +683,13 @@
         const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
         let html = '';
         sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • 
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.totalWinnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • 
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.avgWinnings.toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('leaderboardList').innerHTML = html;
-      },
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
+          html += '<div class="item-card" style="display: flex; justify-content: space-between; align-items: center;">';
+          html += '<div><strong style="font-size: 1.1em;">' + (i + 1) + '. ' + s.name + '</strong></div>';
+          html += '<div style="text-align: right;"><div style="font-size: 1.5em; font-weight: bold; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
+          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div></div></div>';
         });
         document.getElementById('lifetimeLeaderboard').innerHTML = html;
         
-        // Year by year with same styling
         const years = [...new Set([...Object.keys(this.data.archivedYears || {}), this.data.currentYear.toString()])].sort((a, b) => b - a);
         let yearHtml = '';
         years.forEach(year => {
@@ -1425,367 +698,13 @@
           const yearStats = this.getPlayerStats(yearData).sort((a, b) => b.totalWinnings - a.totalWinnings);
           const topPlayer = yearStats[0];
           
-          yearHtml += '<div class="player-item" style="margin-bottom: 15px;">';
-          yearHtml += '<div><strong>' + year + ' ' + (year == this.data.currentYear ? '(Current)' : '') + '</strong>';
+          yearHtml += '<div class="item-card" style="display: flex; justify-content: space-between; align-items: center;">';
+          yearHtml += '<div><strong style="font-size: 1.1em;">' + year + ' ' + (year == this.data.currentYear ? '(Current)' : '') + '</strong>';
           yearHtml += '<div style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Games: ' + yearData.nights.length + '</div></div>';
           yearHtml += '<div style="text-align: right;">';
           if (topPlayer) {
-            yearHtml += '<div style="font-size: 1.2em; color: #f39c12;">' + topPlayer.name + '</div>';
-            yearHtml += '<div style="font-size: 0.9em; color: #2ecc71;">
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.totalWinnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • 
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.avgWinnings.toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('leaderboardList').innerHTML = html;
-      },
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + topPlayer.totalWinnings.toFixed(2) + '</div>';
+            yearHtml += '<div style="font-size: 1.2em; color: #f39c12; font-weight: bold;">' + topPlayer.name + '</div>';
+            yearHtml += '<div style="font-size: 0.9em; color: #2ecc71;">$' + topPlayer.totalWinnings.toFixed(2) + '</div>';
           }
           yearHtml += '</div></div>';
         });
@@ -1807,22 +726,15 @@
         
         let nightsHtml = '';
         this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
+          nightsHtml += '<div class="night-item"><div class="night-header"><div><h3>' + n.name + '</h3>';
+          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
           if (n.location) nightsHtml += '<br>📍 ' + n.location;
           nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
+          if (n.notes) nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
+          nightsHtml += '</div><div><button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
+          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button></div></div></div>';
         });
         document.getElementById('nightsList').innerHTML = nightsHtml;
-        
         this.renderLeaderboard();
       }
     };
@@ -1830,318 +742,7 @@
     app.init();
   </script>
   
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.totalWinnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • 
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
-  <script src="poker-enhancements.js"></script>
-</body>
-</html> + s.avgWinnings.toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('leaderboardList').innerHTML = html;
-      },
-
-      renderCharts() {
-        const stats = this.getPlayerStats().sort((a, b) => b.totalWinnings - a.totalWinnings);
-        
-        const ctx1 = document.getElementById('totalWinningsChart');
-        if (this.charts.total) this.charts.total.destroy();
-        this.charts.total = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.totalWinnings), backgroundColor: stats.map(s => s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx2 = document.getElementById('gamesPlayedChart');
-        if (this.charts.games) this.charts.games.destroy();
-        this.charts.games = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.games), backgroundColor: '#f39c12' }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-        
-        const ctx3 = document.getElementById('avgWinningsChart');
-        if (this.charts.avg) this.charts.avg.destroy();
-        this.charts.avg = new Chart(ctx3, {
-          type: 'line',
-          data: {
-            labels: stats.map(s => s.name),
-            datasets: [{ data: stats.map(s => s.avgWinnings), borderColor: '#9b59b6', tension: 0.4 }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      },
-
-      renderBadges() {
-        const badgeDefs = [
-          { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
-          { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
-          { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
-          { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
-          { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
-          { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
-          { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
-          { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
-        ];
-        const stats = this.getPlayerStats();
-        const holders = {};
-        stats.forEach(s => {
-          this.getAchievements(s).forEach(badge => {
-            if (!holders[badge]) holders[badge] = [];
-            holders[badge].push(s.name);
-          });
-        });
-        let html = '';
-        badgeDefs.forEach((def, index) => {
-          const names = holders[def.badge] || [];
-          html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
-          html += '<div class="badge-header">' + def.badge + '</div>';
-          html += '<div class="badge-desc">' + def.desc + '</div>';
-          html += '<div class="badge-divider"></div>';
-          html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned this badge</div>';
-          html += '<div class="badge-players">';
-          html += names.length > 0 ? names.map(n => '<span class="badge-player-tag">👤 ' + n + '</span>').join('') : '<span class="badge-empty">No one has earned this badge yet. Be the first!</span>';
-          html += '</div></div>';
-          if (index < badgeDefs.length - 1) {
-            html += '<div style="height: 20px;"></div>';
-          }
-        });
-        document.getElementById('badgesList').innerHTML = html;
-      },
-
-      renderLifetimeStats() {
-        const lifetime = {};
-        this.data.players.forEach(p => {
-          lifetime[p.id] = { name: p.name, games: 0, winnings: 0 };
-        });
-        
-        Object.values(this.data.archivedYears || {}).forEach(year => {
-          this.getPlayerStats(year).forEach(s => {
-            if (lifetime[s.id]) {
-              lifetime[s.id].games += s.games;
-              lifetime[s.id].winnings += s.totalWinnings;
-            }
-          });
-        });
-        
-        this.getPlayerStats().forEach(s => {
-          if (lifetime[s.id]) {
-            lifetime[s.id].games += s.games;
-            lifetime[s.id].winnings += s.totalWinnings;
-          }
-        });
-        
-        const sorted = Object.values(lifetime).filter(s => s.games > 0).sort((a, b) => b.winnings - a.winnings);
-        let html = '';
-        sorted.forEach((s, i) => {
-          html += '<div class="leaderboard-item">';
-          html += '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>';
-          html += '<div style="text-align: right;">';
-          html += '<div style="font-size: 1.5em; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
-          html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div>';
-          html += '</div></div>';
-        });
-        document.getElementById('lifetimeLeaderboard').innerHTML = html;
-        document.getElementById('yearByYearStats').innerHTML = '';
-      },
-
-      closeModal(id) {
-        document.getElementById(id).classList.remove('active');
-      },
-
-      render() {
-        let playersHtml = '';
-        this.data.players.forEach(p => {
-          playersHtml += '<div class="player-item"><div><strong>' + p.name + '</strong>';
-          if (p.email) playersHtml += '<div style="font-size: 0.9em; color: #aaa;">' + p.email + '</div>';
-          playersHtml += '</div><button class="btn btn-danger" onclick="app.deletePlayer(' + p.id + ')">Delete</button></div>';
-        });
-        document.getElementById('playersList').innerHTML = playersHtml;
-        
-        let nightsHtml = '';
-        this.data.nights.forEach(n => {
-          nightsHtml += '<div class="night-item"><div class="night-header"><div>';
-          nightsHtml += '<h3>' + n.name + '</h3>';
-          nightsHtml += '<div style="font-size: 0.9em; color: #aaa;">';
-          nightsHtml += '📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
-          if (n.location) nightsHtml += '<br>📍 ' + n.location;
-          nightsHtml += '<br>👥 ' + n.attendees.length + ' attendees</div>';
-          if (n.notes) {
-            nightsHtml += '<div class="notes-display">📝 "' + n.notes + '"</div>';
-          }
-          nightsHtml += '</div><div>';
-          nightsHtml += '<button class="btn btn-primary" onclick="app.editNight(' + n.id + ')">Edit</button>';
-          nightsHtml += '<button class="btn btn-danger" onclick="app.deleteNight(' + n.id + ')">Delete</button>';
-          nightsHtml += '</div></div></div>';
-        });
-        document.getElementById('nightsList').innerHTML = nightsHtml;
-        
-        this.renderLeaderboard();
-      }
-    };
-
-    app.init();
-  </script>
-  
-  <!-- Load enhancements -->
+  <!-- Load enhancements (expense tracking, smart settlement) -->
   <script src="poker-enhancements.js"></script>
 </body>
 </html>
