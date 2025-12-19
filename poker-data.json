@@ -46,35 +46,8 @@
       "email": ""
     }
   ],
-  "nights": [
-    {
-      "id": 1766108838197,
-      "name": "Test 1",
-      "date": "2025-12-18",
-      "time": "20:00",
-      "location": "My house",
-      "attendees": [
-        {
-          "playerId": 1765597994627,
-          "winnings": 60
-        },
-        {
-          "playerId": 1765597999146,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598003121,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598007071,
-          "winnings": -20
-        }
-      ],
-      "buyIn": 20
-    }
-  ],
+  "nights": [],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "d6a1071f8c1839212d386a4a7bdced9021a403bc"
+  "sha": "3e5d294d1368de617c78bd15b92161c6323652f2"
 }
