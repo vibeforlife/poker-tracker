@@ -409,11 +409,18 @@ function renderWrapped() {
     html += '<h3 style="margin-bottom: 15px;">🏆 Achievements</h3>';
     html += achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('');
     html += '</div>';
-    html += '<div id="' + fid + '" style="background: rgba(0,0,0,0.4); padding: 40px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3); cursor: pointer;" onclick="openCookie(\'' + fid + '\', \'' + fortune.replace(/'/g, '') + '\')">';
+    html += '<div id="' + fid + '" class="fortune-cookie" data-fortune="' + fortune.replace(/"/g, '&quot;') + '" style="background: rgba(0,0,0,0.4); padding: 40px; border-radius: 12px; margin: 20px 0; border: 2px dashed rgba(255,215,0,0.3); cursor: pointer;">';
     html += '<div style="font-size: 5em; text-align: center;">🥠</div><p style="text-align: center; margin-top: 10px;">Click for your fortune</p></div></div>';
   });
   
   document.getElementById('wrappedContent').innerHTML = html || '<p style="text-align: center; color: #888;">No data yet</p>';
+  
+  // Attach click handlers
+  document.querySelectorAll('.fortune-cookie').forEach(function(el) {
+    el.addEventListener('click', function() {
+      openCookie(el.id, el.dataset.fortune);
+    });
+  });
 }
 
 function openCookie(id, fortune) {
