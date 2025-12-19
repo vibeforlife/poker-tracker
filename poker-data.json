@@ -48,63 +48,6 @@
   ],
   "nights": [
     {
-      "id": 1765598061305,
-      "name": "Jan",
-      "date": "2026-01-22",
-      "time": "19:00",
-      "location": "Dossajee house",
-      "attendees": [],
-      "buyIn": 20
-    },
-    {
-      "id": 1766107685327,
-      "name": "Test 5",
-      "date": "2025-12-18",
-      "time": "19:00",
-      "location": "",
-      "attendees": [
-        {
-          "playerId": 1765597994627,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765597999146,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598003121,
-          "winnings": -20
-        }
-      ],
-      "buyIn": 20
-    },
-    {
-      "id": 1765664847783,
-      "name": "Test2",
-      "date": "2025-12-14",
-      "time": "20:00",
-      "location": "Test location",
-      "attendees": [
-        {
-          "playerId": 1765597994627,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765597999146,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598003121,
-          "winnings": 60
-        },
-        {
-          "playerId": 1765598007071,
-          "winnings": 0
-        }
-      ],
-      "buyIn": 20
-    },
-    {
       "id": 1765666289312,
       "name": "Test 3",
       "date": "2025-12-13",
@@ -218,5 +161,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "63c35742263d77f7397ec42b5b0ffbc152d36486"
+  "sha": "f1ee30fa56e84e4263a9437ca23504adcbf3dd11"
 }
