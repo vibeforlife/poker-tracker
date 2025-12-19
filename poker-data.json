@@ -72,7 +72,19 @@
         }
       ],
       "buyIn": 20,
-      "notes": "This was a really wonderful game!"
+      "notes": "This was a really wonderful game!",
+      "expenses": {
+        "food": 30,
+        "drinks": 10,
+        "other": 20,
+        "paidBy": 1765597994627,
+        "splitAmong": [
+          1765597994627,
+          1765597999146,
+          1765598003121
+        ],
+        "notes": ""
+      }
     },
     {
       "id": 1766111031714,
@@ -184,5 +196,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "9cb78ce47779d77004cce464432ffdaecb6c492e"
+  "sha": "490f911048c7e8521abdca80442c4bf35aab6ffc"
 }
