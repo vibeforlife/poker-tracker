@@ -85,15 +85,7 @@
           "winnings": -20
         }
       ],
-      "buyIn": 20,
-      "expenses": {
-        "food": 0,
-        "drinks": 0,
-        "other": 0,
-        "paidBy": null,
-        "splitAmong": [],
-        "notes": ""
-      }
+      "buyIn": 20
     },
     {
       "id": 1765664847783,
@@ -235,5 +227,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "2f524609496f17e700dd72740fbc7b31697793b4"
+  "sha": "fbf9014cd212f0311db1dad06d632fc4139e0532"
 }
