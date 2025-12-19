@@ -125,25 +125,6 @@
       "buyIn": 20
     },
     {
-      "id": 1766144994056,
-      "name": "Nooruddin house",
-      "date": "2025-12-21",
-      "time": "20:49",
-      "location": "Mississauga",
-      "notes": "",
-      "attendees": [
-        {
-          "playerId": 1765597994627,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765597999146,
-          "winnings": -20
-        }
-      ],
-      "buyIn": 20
-    },
-    {
       "id": 1766145048509,
       "name": "Asim house",
       "date": "2025-12-21",
@@ -360,5 +341,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "0272792fcc5ae4fb17b6902db50d48e847514b26"
+  "sha": "8ca7ea2aedba380b16881fcf652c83acc7d8cd9b"
 }
