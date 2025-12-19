@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+                  ${n.notes ? `<div style="font-size: 0.9em; color: #aaa; margin-top: 8px; font-style: italic; padding: 8px; background: #2a2a40; border-radius: 6px;">📝 "${n.notes}"</div>` : ''}<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -111,6 +111,7 @@
     <div class="top-controls">
       <button class="btn btn-secondary" onclick="app.undo()">↶ Undo</button>
       <div>
+        <button class="btn btn-secondary" onclick="app.showHandRankings()">🃏 Hand Rankings</button>
         <button class="btn btn-secondary" onclick="app.manualSync()">🔄 Sync</button>
         <button class="btn btn-primary" onclick="app.showQRCode()">📱 Share</button>
         <button class="btn btn-secondary" onclick="app.exportData()">⬇ Export</button>
@@ -381,7 +382,16 @@
         const location = document.getElementById('newNightLocation').value.trim();
         if (!date) { alert('Select date'); return; }
         this.saveState();
-        this.data.nights.push({ id: Date.now(), name, date, time, location, attendees: [], buyIn: 20 });
+        this.data.nights.push({ 
+          id: Date.now(), 
+          name, 
+          date, 
+          time, 
+          location, 
+          notes: '',
+          attendees: [], 
+          buyIn: 20 
+        });
         document.getElementById('newNightName').value = '';
         document.getElementById('newNightDate').value = '';
         document.getElementById('newNightTime').value = '';
@@ -476,18 +486,36 @@
         const night = this.data.nights.find(n => n.id === id);
         const content = document.getElementById('editNightContent');
         content.innerHTML = `
-          <label>Name:</label><input type="text" id="editNightName" value="${night.name || ''}">
+          <label>Name:</label>
+          <input type="text" id="editNightName" value="${night.name || ''}">
+          
           <div class="form-row">
-            <div><label>Date:</label><input type="date" id="editNightDate" value="${night.date}"></div>
-            <div><label>Time:</label><input type="time" id="editNightTime" value="${night.time || '19:00'}"></div>
+            <div>
+              <label>Date:</label>
+              <input type="date" id="editNightDate" value="${night.date}">
+            </div>
+            <div>
+              <label>Time:</label>
+              <input type="time" id="editNightTime" value="${night.time || '19:00'}">
+            </div>
           </div>
-          <label>Location:</label><input type="text" id="editNightLocation" value="${night.location || ''}">
-          <label>Buy-In:</label><input type="number" id="editBuyIn" value="${night.buyIn}">
+          
+          <label>Location:</label>
+          <input type="text" id="editNightLocation" value="${night.location || ''}">
+          
+          <label>Notes:</label>
+          <textarea id="editNightNotes" placeholder="Add notes about this game...">${night.notes || ''}</textarea>
+          
+          <label>Buy-In:</label>
+          <input type="number" id="editBuyIn" value="${night.buyIn}">
+          
           <h3>Attendees</h3>
           <input type="text" id="playerSearch" placeholder="Search..." onkeyup="app.filterPlayers()">
           <div class="checkbox-list" id="attendeeCheckboxes"></div>
+          
           <h3>Results</h3>
           <div id="attendeeResults"></div>
+          
           <button class="btn btn-primary" onclick="app.saveNight(${id})">Save</button>
           <button class="btn btn-secondary" onclick="app.calculateSettlement(${id})">Settlement</button>
         `;
@@ -538,7 +566,9 @@
         night.date = document.getElementById('editNightDate').value;
         night.time = document.getElementById('editNightTime').value || '19:00';
         night.location = document.getElementById('editNightLocation').value.trim();
+        night.notes = document.getElementById('editNightNotes').value.trim();
         night.buyIn = parseFloat(document.getElementById('editBuyIn').value) || 20;
+        
         const currentIds = night.attendees.map(a => a.playerId);
         const selectedIds = [];
         this.data.players.forEach(player => {
