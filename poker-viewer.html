@@ -3,70 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fold and Furious Poker Tracker - Viewer</title>
+  <title>Fold and Furious - Viewer</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e4e4e4; min-height: 100vh; padding: 20px; }
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e4e4e4; min-height: 100vh; padding: 20px; }
     .container { max-width: 1200px; margin: 0 auto; }
-    h1 { text-align: center; margin-bottom: 10px; font-size: 2.5em; background: linear-gradient(45deg, #f39c12, #e74c3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .subtitle { text-align: center; color: #aaa; margin-bottom: 30px; font-size: 0.9em; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 2.5em; background: linear-gradient(45deg, #f39c12, #e74c3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { text-align: center; color: #aaa; margin-bottom: 30px; }
+    .refresh-btn { background: #3a3a50; color: #e4e4e4; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; margin: 0 5px; }
+    .refresh-btn:hover { background: #4a4a60; }
     .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-    .tab { padding: 12px 24px; background: #2a2a40; border: none; border-radius: 8px; color: #e4e4e4; cursor: pointer; transition: all 0.3s; font-size: 16px; }
+    .tab { padding: 12px 24px; background: #2a2a40; border: none; border-radius: 8px; color: #e4e4e4; cursor: pointer; font-size: 16px; }
     .tab:hover { background: #3a3a50; }
     .tab.active { background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
     .card { background: #2a2a40; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
-    .leaderboard-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a2e; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-    .leaderboard-item:hover { background: #2a2a3e; transform: translateX(5px); }
-    .achievement { display: inline-block; padding: 5px 10px; background: linear-gradient(45deg, #f39c12, #e74c3c); border-radius: 20px; margin: 5px; font-size: 12px; animation: pop 0.5s ease; }
-    @keyframes pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
-    .stat-card { background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center; }
-    .stat-value { font-size: 2em; font-weight: bold; color: #f39c12; }
-    .stat-label { font-size: 0.9em; color: #aaa; margin-top: 5px; }
-    .chart-container { position: relative; height: 300px; margin: 20px 0; }
-    .badge-card { background: #1a1a2e; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
-    .badge-header { font-size: 1.5em; margin-bottom: 10px; }
-    .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    .badge-player-tag { background: #2a2a40; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
-    .year-selector { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    
+    .item-card { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: all 0.3s; }
+    .item-card:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    
+    .night-item { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: all 0.3s; }
+    .night-item:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    .night-header { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 10px; }
+    .notes-display { font-size: 0.9em; color: #aaa; margin-top: 8px; font-style: italic; padding: 8px; background: #2a2a40; border-radius: 6px; }
+    
+    .achievement { display: inline-block; padding: 5px 10px; background: linear-gradient(45deg, #f39c12, #e74c3c); border-radius: 20px; margin: 5px; font-size: 12px; }
+    
+    .badge-card { background: linear-gradient(135deg, #2a2a40 0%, #1a1a2e 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #f39c12; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); transition: transform 0.3s; }
+    .badge-card:hover { transform: translateX(5px); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4); }
+    .badge-header { font-size: 2em; margin-bottom: 15px; }
+    .badge-desc { color: #bbb; font-size: 1.1em; margin-bottom: 15px; }
+    .badge-divider { height: 1px; background: linear-gradient(90deg, transparent, #f39c12, transparent); margin: 15px 0; }
+    .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .badge-player-tag { background: linear-gradient(45deg, #3a3a50, #2a2a40); padding: 8px 16px; border-radius: 20px; font-size: 0.95em; border: 1px solid #4a4a60; transition: all 0.3s; }
+    .badge-player-tag:hover { background: linear-gradient(45deg, #4a4a60, #3a3a50); transform: scale(1.05); }
+    .badge-empty { color: #666; font-style: italic; }
+    
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
     .modal.active { display: flex; align-items: center; justify-content: center; }
     .modal-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
-    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; margin: 5px; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin: 5px; }
     .btn-secondary { background: #3a3a50; color: #e4e4e4; }
-    .btn-secondary:hover { background: #4a4a60; }
-    select { padding: 10px; border: 1px solid #3a3a50; border-radius: 8px; background: #1a1a2e; color: #e4e4e4; font-size: 14px; }
     .loading { text-align: center; padding: 40px; font-size: 1.2em; color: #aaa; }
     .error { text-align: center; padding: 40px; color: #e74c3c; }
-    @media (max-width: 768px) { h1 { font-size: 1.8em; } .tabs { justify-content: center; } .tab { flex: 1; min-width: 120px; } }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🃏 Fold and Furious Poker Tracker</h1>
-    <p class="subtitle">📖 Read-Only View • <button class="btn btn-secondary" onclick="refreshData()" style="display: inline-block; padding: 5px 15px; margin: 0;">🔄 Refresh</button></p>
+    <h1>🃏 Fold and Furious</h1>
+    <p class="subtitle">
+      📖 Read-Only View • 
+      <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+      <button class="refresh-btn" onclick="showHandRankings()">🃏 Poker Hands</button>
+    </p>
 
     <div id="loadingState" class="loading">Loading poker data...</div>
-    <div id="errorState" class="error" style="display: none;">Unable to load data. Please check connection.</div>
+    <div id="errorState" class="error" style="display: none;">Unable to load data.</div>
 
     <div id="appContent" style="display: none;">
       <div class="tabs">
-        <button class="tab active" onclick="switchTab('leaderboard')">Leaderboard</button>
+        <button class="tab active" onclick="switchTab('nights')">Nights</button>
+        <button class="tab" onclick="switchTab('leaderboard')">Leaderboard</button>
         <button class="tab" onclick="switchTab('charts')">Charts</button>
         <button class="tab" onclick="switchTab('badges')">Badges</button>
-        <button class="tab" onclick="switchTab('lifetime')">Lifetime Stats</button>
+        <button class="tab" onclick="switchTab('lifetime')">Lifetime</button>
       </div>
 
-      <div id="leaderboard" class="tab-content active">
-        <div class="year-selector">
-          <label>View Year:</label>
-          <select id="leaderboardYearSelect" onchange="renderLeaderboard()">
-            <option value="current">Current Year</option>
-          </select>
+      <div id="nights" class="tab-content active">
+        <div class="card">
+          <h2>📅 Recent Poker Nights</h2>
+          <div id="nightsList"></div>
         </div>
+      </div>
+
+      <div id="leaderboard" class="tab-content">
         <div class="card">
           <h2>🏆 Leaderboard</h2>
           <div id="leaderboardList"></div>
@@ -74,48 +86,18 @@
       </div>
 
       <div id="charts" class="tab-content">
-        <div class="year-selector">
-          <label>View Year:</label>
-          <select id="chartsYearSelect" onchange="renderCharts()">
-            <option value="current">Current Year</option>
-          </select>
-        </div>
-        <div class="card">
-          <h2>Total Winnings</h2>
-          <div class="chart-container">
-            <canvas id="totalWinningsChart"></canvas>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Games Played</h2>
-          <div class="chart-container">
-            <canvas id="gamesPlayedChart"></canvas>
-          </div>
-        </div>
-        <div class="card">
-          <h2>Average Winnings</h2>
-          <div class="chart-container">
-            <canvas id="avgWinningsChart"></canvas>
-          </div>
-        </div>
+        <div class="card"><h2>Total Winnings</h2><div style="height: 300px; position: relative;"><canvas id="totalWinningsChart"></canvas></div></div>
+        <div class="card"><h2>Games Played</h2><div style="height: 300px; position: relative;"><canvas id="gamesPlayedChart"></canvas></div></div>
+        <div class="card"><h2>Average Winnings</h2><div style="height: 300px; position: relative;"><canvas id="avgWinningsChart"></canvas></div></div>
       </div>
 
       <div id="badges" class="tab-content">
-        <div class="card">
-          <h2>🏅 All Badges</h2>
-          <div id="badgesList"></div>
-        </div>
+        <div class="card"><h2>🏅 All Badges</h2><div id="badgesList"></div></div>
       </div>
 
       <div id="lifetime" class="tab-content">
-        <div class="card">
-          <h2>🌟 Lifetime Leaderboard</h2>
-          <div id="lifetimeLeaderboard"></div>
-        </div>
-        <div class="card">
-          <h2>Year by Year</h2>
-          <div id="yearByYearStats"></div>
-        </div>
+        <div class="card"><h2>🌟 Lifetime Leaderboard</h2><div id="lifetimeLeaderboard"></div></div>
+        <div class="card"><h2>📅 Year by Year</h2><div id="yearByYearStats"></div></div>
       </div>
     </div>
   </div>
@@ -124,10 +106,23 @@
     <div class="modal-content">
       <h2 id="playerProfileName"></h2>
       <div id="playerProfileContent"></div>
-      <div class="chart-container">
-        <canvas id="playerHistoryChart"></canvas>
-      </div>
       <button class="btn btn-secondary" onclick="closeModal('playerProfileModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="nightDetailModal" class="modal">
+    <div class="modal-content">
+      <h2 id="nightDetailName"></h2>
+      <div id="nightDetailContent"></div>
+      <button class="btn btn-secondary" onclick="closeModal('nightDetailModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="handRankingsModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <h2>🃏 Poker Hand Rankings</h2>
+      <img src="https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker%20hand%20rankings.jpg" style="max-width: 100%; border-radius: 8px; margin: 20px 0;">
+      <button class="btn btn-secondary" onclick="closeModal('handRankingsModal')">Close</button>
     </div>
   </div>
 
@@ -137,41 +132,29 @@
     var DATA_URL = 'https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker-data.json';
 
     function loadData() {
-      // Add cache-busting timestamp
       var cacheBuster = '?t=' + new Date().getTime();
       fetch(DATA_URL + cacheBuster)
         .then(function(response) {
-          if (!response.ok) throw new Error('Failed to fetch');
+          if (!response.ok) throw new Error('Failed');
           return response.json();
         })
         .then(function(data) {
           appData = data;
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('appContent').style.display = 'block';
-          populateYearSelectors();
+          renderNights();
           renderLeaderboard();
         })
         .catch(function(error) {
-          console.error('Error:', error);
           document.getElementById('loadingState').style.display = 'none';
           document.getElementById('errorState').style.display = 'block';
         });
     }
 
-    function populateYearSelectors() {
-      var years = Object.keys(appData.archivedYears || {}).sort(function(a, b) { return b - a; });
-      ['leaderboardYearSelect', 'chartsYearSelect'].forEach(function(selectId) {
-        var select = document.getElementById(selectId);
-        select.innerHTML = '<option value="current">Current Year (' + appData.currentYear + ')</option>';
-        years.forEach(function(year) {
-          select.innerHTML += '<option value="' + year + '">' + year + '</option>';
-        });
-      });
-    }
-
-    function getYearData(year) {
-      if (year === 'current') return { players: appData.players, nights: appData.nights };
-      return appData.archivedYears[year] || { players: [], nights: [] };
+    function refreshData() {
+      document.getElementById('loadingState').style.display = 'block';
+      document.getElementById('appContent').style.display = 'none';
+      loadData();
     }
 
     function switchTab(tab) {
@@ -182,6 +165,54 @@
       if (tab === 'charts') renderCharts();
       if (tab === 'badges') renderBadges();
       if (tab === 'lifetime') renderLifetimeStats();
+      if (tab === 'nights') renderNights();
+    }
+
+    function renderNights() {
+      var nights = appData.nights.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+      var html = '';
+      
+      nights.forEach(function(n) {
+        html += '<div class="night-item" onclick="showNightDetail(' + n.id + ')" style="cursor: pointer;">';
+        html += '<div class="night-header"><div><h3>' + n.name + '</h3>';
+        html += '<div style="font-size: 0.9em; color: #aaa;">📅 ' + n.date + (n.time ? ' • 🕐 ' + n.time : '');
+        if (n.location) html += '<br>📍 ' + n.location;
+        html += '<br>👥 ' + n.attendees.length + ' attendees</div>';
+        if (n.notes) html += '<div class="notes-display">📝 "' + n.notes + '"</div>';
+        html += '</div></div></div>';
+      });
+      
+      document.getElementById('nightsList').innerHTML = html || '<p style="color: #888;">No poker nights yet</p>';
+    }
+
+    function showNightDetail(nightId) {
+      var night = appData.nights.find(function(n) { return n.id === nightId; });
+      if (!night) return;
+      
+      document.getElementById('nightDetailName').textContent = night.name;
+      
+      var html = '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">';
+      html += '<p><strong>📅 Date:</strong> ' + night.date + '</p>';
+      if (night.time) html += '<p><strong>🕐 Time:</strong> ' + night.time + '</p>';
+      if (night.location) html += '<p><strong>📍 Location:</strong> ' + night.location + '</p>';
+      if (night.notes) html += '<p style="margin-top: 10px;"><strong>📝 Notes:</strong><br><em style="color: #aaa;">' + night.notes + '</em></p>';
+      html += '</div>';
+      
+      html += '<h3>Results</h3><div style="margin-top: 10px;">';
+      var sorted = night.attendees.slice().sort(function(a, b) { return b.winnings - a.winnings; });
+      sorted.forEach(function(a, i) {
+        var player = appData.players.find(function(p) { return p.id === a.playerId; });
+        if (!player) return;
+        var rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
+        html += '<div style="display: flex; justify-content: space-between; padding: 10px; background: #2a2a40; margin: 5px 0; border-radius: 6px;">';
+        html += '<span>' + rank + ' ' + player.name + '</span>';
+        html += '<span style="font-weight: bold; color: ' + (a.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + a.winnings.toFixed(2) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+      
+      document.getElementById('nightDetailContent').innerHTML = html;
+      document.getElementById('nightDetailModal').classList.add('active');
     }
 
     function getPlayerStats(yearData) {
@@ -205,25 +236,36 @@
       var allStats = getPlayerStats(yearData);
       var maxWinnings = Math.max.apply(Math, allStats.map(function(s) { return s.totalWinnings; }));
       if (stats.totalWinnings === maxWinnings && maxWinnings > 0) achievements.push('🏆 Top Earner YTD');
+      
       var playerNights = data.nights.filter(function(n) {
         return n.attendees.some(function(a) { return a.playerId === stats.id; });
       }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+      
       var streak = 0, maxStreak = 0;
       playerNights.forEach(function(night) {
         var attendee = night.attendees.find(function(a) { return a.playerId === stats.id; });
-        if (attendee.winnings > 0) { streak++; maxStreak = Math.max(maxStreak, streak); } else streak = 0;
+        if (attendee && attendee.winnings > 0) { 
+          streak++; 
+          maxStreak = Math.max(maxStreak, streak); 
+        } else {
+          streak = 0;
+        }
       });
       if (maxStreak >= 3) achievements.push('🔥 Hot Streak');
-      var maxWin = Math.max.apply(Math, playerNights.map(function(n) {
+      
+      var wins = playerNights.map(function(n) {
         var a = n.attendees.find(function(at) { return at.playerId === stats.id; });
         return a ? a.winnings : -Infinity;
-      }).concat([0]));
+      });
+      var maxWin = wins.length > 0 ? Math.max.apply(Math, wins) : 0;
       if (maxWin >= 100) achievements.push('💎 High Roller');
+      
       if (stats.games >= 5) achievements.push('🎮 Regular Player');
       if (stats.games >= 20) achievements.push('🌟 Veteran');
       if (stats.games >= 50) achievements.push('💯 Half Century');
       if (stats.totalWinnings >= 100) achievements.push('💵 $100 Club');
       if (stats.totalWinnings >= 500) achievements.push('💎 $500 Club');
+      
       return achievements;
     }
 
@@ -231,185 +273,162 @@
       var player = appData.players.find(function(p) { return p.id === playerId; });
       var stats = getPlayerStats().find(function(s) { return s.id === playerId; });
       var achievements = getAchievements(stats);
+      
       document.getElementById('playerProfileName').textContent = player.name;
-      var content = document.getElementById('playerProfileContent');
-      content.innerHTML = '<div class="stats-grid">' +
-        '<div class="stat-card"><div class="stat-value">' + stats.games + '</div><div class="stat-label">Games Played</div></div>' +
-        '<div class="stat-card"><div class="stat-value">$' + stats.totalWinnings.toFixed(2) + '</div><div class="stat-label">Total Winnings</div></div>' +
-        '<div class="stat-card"><div class="stat-value">$' + stats.avgWinnings.toFixed(2) + '</div><div class="stat-label">Avg per Game</div></div>' +
-        '</div><h3>Achievements</h3><div>' +
-        achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('') +
-        (achievements.length === 0 ? '<p>No achievements yet</p>' : '') +
-        '</div><h3>Performance Over Time</h3>';
-      var history = appData.nights.filter(function(n) {
-        return n.attendees.some(function(a) { return a.playerId === playerId; });
-      }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); }).map(function(night) {
-        return { date: night.date, winnings: night.attendees.find(function(a) { return a.playerId === playerId; }).winnings };
-      });
-      var ctx = document.getElementById('playerHistoryChart');
-      if (charts.playerHistory) charts.playerHistory.destroy();
-      charts.playerHistory = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: history.map(function(h) { return h.date; }),
-          datasets: [{ label: 'Winnings', data: history.map(function(h) { return h.winnings; }), borderColor: '#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.1)', tension: 0.4 }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } },
-            x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }
-          }
-        }
-      });
+      
+      var html = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">';
+      html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;"><div style="font-size: 2em; font-weight: bold; color: #f39c12;">' + stats.games + '</div><div style="font-size: 0.9em; color: #aaa;">Games</div></div>';
+      html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;"><div style="font-size: 2em; font-weight: bold; color: #f39c12;">$' + stats.totalWinnings.toFixed(2) + '</div><div style="font-size: 0.9em; color: #aaa;">Total</div></div>';
+      html += '<div style="background: #1a1a2e; padding: 15px; border-radius: 8px; text-align: center;"><div style="font-size: 2em; font-weight: bold; color: #f39c12;">$' + stats.avgWinnings.toFixed(2) + '</div><div style="font-size: 0.9em; color: #aaa;">Avg</div></div>';
+      html += '</div><h3>Achievements</h3><div style="margin: 15px 0;">';
+      html += achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('');
+      if (achievements.length === 0) html += '<p style="color: #888;">No achievements yet</p>';
+      html += '</div>';
+      
+      document.getElementById('playerProfileContent').innerHTML = html;
       document.getElementById('playerProfileModal').classList.add('active');
     }
 
     function renderLeaderboard() {
-      var year = document.getElementById('leaderboardYearSelect').value;
-      var yearData = getYearData(year);
-      var stats = getPlayerStats(yearData).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
-      var list = document.getElementById('leaderboardList');
-      list.innerHTML = stats.map(function(s, i) {
-        var achievements = getAchievements(s, yearData);
-        return '<div class="leaderboard-item" onclick="showPlayerProfile(' + s.id + ')">' +
-          '<div><strong>' + (i + 1) + '. ' + s.name + '</strong><div>' +
-          achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('') +
-          '</div></div><div style="text-align: right;">' +
-          '<div style="font-size: 1.5em; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.totalWinnings.toFixed(2) + '</div>' +
-          '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + s.avgWinnings.toFixed(2) + ' avg</div>' +
-          '</div></div>';
-      }).join('');
+      var stats = getPlayerStats().sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+      var html = '';
+      
+      stats.forEach(function(s, i) {
+        var achievements = getAchievements(s);
+        html += '<div class="item-card" onclick="showPlayerProfile(' + s.id + ')" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">';
+        html += '<div><strong style="font-size: 1.1em;">' + (i + 1) + '. ' + s.name + '</strong><div style="margin-top: 5px;">';
+        html += achievements.map(function(a) { return '<span class="achievement">' + a + '</span>'; }).join('');
+        html += '</div></div><div style="text-align: right;">';
+        html += '<div style="font-size: 1.5em; font-weight: bold; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.totalWinnings.toFixed(2) + '</div>';
+        html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + s.avgWinnings.toFixed(2) + ' avg</div>';
+        html += '</div></div>';
+      });
+      
+      document.getElementById('leaderboardList').innerHTML = html;
     }
 
     function renderCharts() {
-      var year = document.getElementById('chartsYearSelect').value;
-      var yearData = getYearData(year);
-      var stats = getPlayerStats(yearData).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+      var stats = getPlayerStats().sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
+      
       var ctx1 = document.getElementById('totalWinningsChart');
-      if (charts.totalWinnings) charts.totalWinnings.destroy();
-      charts.totalWinnings = new Chart(ctx1, {
+      if (charts.total) charts.total.destroy();
+      charts.total = new Chart(ctx1, {
         type: 'bar',
-        data: {
-          labels: stats.map(function(s) { return s.name; }),
-          datasets: [{ label: 'Total Winnings', data: stats.map(function(s) { return s.totalWinnings; }), backgroundColor: stats.map(function(s) { return s.totalWinnings >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)'; }) }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
+        data: { labels: stats.map(function(s) { return s.name; }), datasets: [{ data: stats.map(function(s) { return s.totalWinnings; }), backgroundColor: stats.map(function(s) { return s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c'; }) }]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
+      
       var ctx2 = document.getElementById('gamesPlayedChart');
-      if (charts.gamesPlayed) charts.gamesPlayed.destroy();
-      charts.gamesPlayed = new Chart(ctx2, {
+      if (charts.games) charts.games.destroy();
+      charts.games = new Chart(ctx2, {
         type: 'bar',
-        data: {
-          labels: stats.map(function(s) { return s.name; }),
-          datasets: [{ label: 'Games Played', data: stats.map(function(s) { return s.games; }), backgroundColor: 'rgba(243, 156, 18, 0.8)' }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
+        data: { labels: stats.map(function(s) { return s.name; }), datasets: [{ data: stats.map(function(s) { return s.games; }), backgroundColor: '#f39c12' }]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
+      
       var ctx3 = document.getElementById('avgWinningsChart');
-      if (charts.avgWinnings) charts.avgWinnings.destroy();
-      charts.avgWinnings = new Chart(ctx3, {
+      if (charts.avg) charts.avg.destroy();
+      charts.avg = new Chart(ctx3, {
         type: 'line',
-        data: {
-          labels: stats.map(function(s) { return s.name; }),
-          datasets: [{ label: 'Average Winnings', data: stats.map(function(s) { return s.avgWinnings; }), borderColor: '#9b59b6', backgroundColor: 'rgba(155, 89, 182, 0.1)', tension: 0.4 }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#e4e4e4' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } } } }
+        data: { labels: stats.map(function(s) { return s.name; }), datasets: [{ data: stats.map(function(s) { return s.avgWinnings; }), borderColor: '#9b59b6', tension: 0.4 }]},
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
       });
     }
 
     function renderBadges() {
       var badgeDefs = [
-        { badge: '🏆 Top Earner YTD', description: 'Highest total winnings this year' },
-        { badge: '🔥 Hot Streak', description: '3+ wins in a row' },
-        { badge: '💎 High Roller', description: 'Single win of $100+' },
-        { badge: '🎮 Regular Player', description: '5+ games played' },
-        { badge: '🌟 Veteran', description: '20+ games played' },
-        { badge: '💯 Half Century', description: '50+ games played' },
-        { badge: '💵 $100 Club', description: '$100+ total winnings' },
-        { badge: '💎 $500 Club', description: '$500+ total winnings' }
+        { badge: '🏆 Top Earner YTD', desc: 'Highest total winnings this year', color: '#f39c12' },
+        { badge: '🔥 Hot Streak', desc: 'Won 3 or more games in a row', color: '#e74c3c' },
+        { badge: '💎 High Roller', desc: 'Single night win of $100 or more', color: '#3498db' },
+        { badge: '🎮 Regular Player', desc: 'Played 5 or more games', color: '#9b59b6' },
+        { badge: '🌟 Veteran', desc: 'Played 20 or more games', color: '#f39c12' },
+        { badge: '💯 Half Century', desc: 'Played 50 or more games', color: '#2ecc71' },
+        { badge: '💵 $100 Club', desc: 'Total winnings of $100 or more', color: '#27ae60' },
+        { badge: '💎 $500 Club', desc: 'Total winnings of $500 or more', color: '#16a085' }
       ];
+      
       var stats = getPlayerStats();
-      var badgeHolders = {};
+      var holders = {};
       stats.forEach(function(s) {
-        var achievements = getAchievements(s);
-        achievements.forEach(function(badge) {
-          if (!badgeHolders[badge]) badgeHolders[badge] = [];
-          badgeHolders[badge].push(s.name);
+        getAchievements(s).forEach(function(badge) {
+          if (!holders[badge]) holders[badge] = [];
+          holders[badge].push(s.name);
         });
       });
-      var list = document.getElementById('badgesList');
-      list.innerHTML = badgeDefs.map(function(def) {
-        var holders = badgeHolders[def.badge] || [];
-        return '<div class="badge-card">' +
-          '<div class="badge-header">' + def.badge + '</div>' +
-          '<div style="color: #aaa; margin-bottom: 10px;">' + def.description + '</div>' +
-          '<div class="badge-players">' +
-          (holders.length > 0 ? holders.map(function(name) { return '<span class="badge-player-tag">' + name + '</span>'; }).join('') : '<span style="color: #888;">No players have earned this badge yet</span>') +
-          '</div></div>';
-      }).join('');
+      
+      var html = '';
+      badgeDefs.forEach(function(def) {
+        var names = holders[def.badge] || [];
+        html += '<div class="badge-card" style="border-left-color: ' + def.color + ';">';
+        html += '<div class="badge-header">' + def.badge + '</div>';
+        html += '<div class="badge-desc">' + def.desc + '</div>';
+        html += '<div class="badge-divider"></div>';
+        html += '<div style="font-size: 0.9em; color: #888; margin-bottom: 10px;">🏅 ' + names.length + ' player' + (names.length !== 1 ? 's' : '') + ' earned</div>';
+        html += '<div class="badge-players">';
+        html += names.length > 0 ? names.map(function(n) { return '<span class="badge-player-tag">👤 ' + n + '</span>'; }).join('') : '<span class="badge-empty">No one yet. Be the first!</span>';
+        html += '</div></div>';
+      });
+      
+      document.getElementById('badgesList').innerHTML = html;
     }
 
     function renderLifetimeStats() {
-      var lifetimeStats = {};
-      appData.players.forEach(function(player) {
-        lifetimeStats[player.id] = { name: player.name, totalGames: 0, totalWinnings: 0, years: {} };
-      });
-      Object.keys(appData.archivedYears || {}).forEach(function(year) {
-        var yearData = appData.archivedYears[year];
-        var yearStats = getPlayerStats(yearData);
-        yearStats.forEach(function(s) {
-          if (lifetimeStats[s.id]) {
-            lifetimeStats[s.id].totalGames += s.games;
-            lifetimeStats[s.id].totalWinnings += s.totalWinnings;
-            lifetimeStats[s.id].years[year] = { games: s.games, winnings: s.totalWinnings };
+      var lifetime = {};
+      appData.players.forEach(function(p) { lifetime[p.id] = { name: p.name, games: 0, winnings: 0 }; });
+      
+      Object.values(appData.archivedYears || {}).forEach(function(year) {
+        getPlayerStats(year).forEach(function(s) {
+          if (lifetime[s.id]) {
+            lifetime[s.id].games += s.games;
+            lifetime[s.id].winnings += s.totalWinnings;
           }
         });
       });
-      var currentStats = getPlayerStats();
-      currentStats.forEach(function(s) {
-        if (lifetimeStats[s.id]) {
-          lifetimeStats[s.id].totalGames += s.games;
-          lifetimeStats[s.id].totalWinnings += s.totalWinnings;
-          lifetimeStats[s.id].years[appData.currentYear] = { games: s.games, winnings: s.totalWinnings };
+      
+      getPlayerStats().forEach(function(s) {
+        if (lifetime[s.id]) {
+          lifetime[s.id].games += s.games;
+          lifetime[s.id].winnings += s.totalWinnings;
         }
       });
-      var sortedLifetime = Object.values(lifetimeStats).filter(function(s) { return s.totalGames > 0; }).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
-      var lifetimeList = document.getElementById('lifetimeLeaderboard');
-      lifetimeList.innerHTML = sortedLifetime.map(function(s, i) {
-        return '<div class="leaderboard-item">' +
-          '<div><strong>' + (i + 1) + '. ' + s.name + '</strong></div>' +
-          '<div style="text-align: right;">' +
-          '<div style="font-size: 1.5em; color: ' + (s.totalWinnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.totalWinnings.toFixed(2) + '</div>' +
-          '<div style="font-size: 0.9em; color: #aaa;">' + s.totalGames + ' lifetime games • $' + (s.totalWinnings / s.totalGames).toFixed(2) + ' avg</div>' +
-          '</div></div>';
-      }).join('');
-      var yearByYear = document.getElementById('yearByYearStats');
+      
+      var sorted = Object.values(lifetime).filter(function(s) { return s.games > 0; }).sort(function(a, b) { return b.winnings - a.winnings; });
+      var html = '';
+      sorted.forEach(function(s, i) {
+        html += '<div class="item-card" style="display: flex; justify-content: space-between; align-items: center;">';
+        html += '<div><strong style="font-size: 1.1em;">' + (i + 1) + '. ' + s.name + '</strong></div>';
+        html += '<div style="text-align: right;"><div style="font-size: 1.5em; font-weight: bold; color: ' + (s.winnings >= 0 ? '#2ecc71' : '#e74c3c') + '">$' + s.winnings.toFixed(2) + '</div>';
+        html += '<div style="font-size: 0.9em; color: #aaa;">' + s.games + ' games • $' + (s.winnings / s.games).toFixed(2) + ' avg</div></div></div>';
+      });
+      document.getElementById('lifetimeLeaderboard').innerHTML = html;
+      
       var years = Object.keys(appData.archivedYears || {}).concat([appData.currentYear.toString()]).sort(function(a, b) { return b - a; });
-      yearByYear.innerHTML = years.map(function(year) {
+      var yearHtml = '';
+      years.forEach(function(year) {
         var yearData = year == appData.currentYear ? { players: appData.players, nights: appData.nights } : appData.archivedYears[year];
-        if (!yearData || !yearData.nights || yearData.nights.length === 0) return '';
+        if (!yearData || !yearData.nights || yearData.nights.length === 0) return;
         var yearStats = getPlayerStats(yearData).sort(function(a, b) { return b.totalWinnings - a.totalWinnings; });
         var topPlayer = yearStats[0];
-        return '<div class="card">' +
-          '<h3>' + year + (year == appData.currentYear ? ' (Current)' : '') + '</h3>' +
-          '<p>Games: ' + yearData.nights.length + '</p>' +
-          '<p>Top Player: ' + (topPlayer ? topPlayer.name + ' ($' + topPlayer.totalWinnings.toFixed(2) + ')' : 'N/A') + '</p>' +
-          '</div>';
-      }).join('');
+        
+        yearHtml += '<div class="item-card" style="display: flex; justify-content: space-between; align-items: center;">';
+        yearHtml += '<div><strong style="font-size: 1.1em;">' + year + ' ' + (year == appData.currentYear ? '(Current)' : '') + '</strong>';
+        yearHtml += '<div style="font-size: 0.9em; color: #aaa; margin-top: 5px;">Games: ' + yearData.nights.length + '</div></div>';
+        yearHtml += '<div style="text-align: right;">';
+        if (topPlayer) {
+          yearHtml += '<div style="font-size: 1.2em; color: #f39c12; font-weight: bold;">' + topPlayer.name + '</div>';
+          yearHtml += '<div style="font-size: 0.9em; color: #2ecc71;">$' + topPlayer.totalWinnings.toFixed(2) + '</div>';
+        }
+        yearHtml += '</div></div>';
+      });
+      document.getElementById('yearByYearStats').innerHTML = yearHtml;
     }
 
     function closeModal(id) {
       document.getElementById(id).classList.remove('active');
     }
 
-    function refreshData() {
-      document.getElementById('loadingState').style.display = 'block';
-      document.getElementById('appContent').style.display = 'none';
-      document.getElementById('errorState').style.display = 'none';
-      loadData();
+    function showHandRankings() {
+      document.getElementById('handRankingsModal').classList.add('active');
     }
 
     loadData();
