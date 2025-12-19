@@ -71,10 +71,11 @@
           "winnings": 80
         }
       ],
-      "buyIn": 20
+      "buyIn": 20,
+      "notes": "This was a really wonderful game!"
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "faf44e12ebf4448da9d91845e6dbb752bcee4eed"
+  "sha": "befc063cddd70e06757bd317e094ffcf4b7a4077"
 }
