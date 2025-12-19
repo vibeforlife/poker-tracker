@@ -100,9 +100,27 @@
         }
       ],
       "buyIn": 30
+    },
+    {
+      "id": 1766112523912,
+      "name": "Test 3",
+      "date": "2025-12-19",
+      "time": "19:00",
+      "location": "home",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "ac88f9ec867eee91f83ee3364dc29f12f2934333"
+  "sha": "e430e2536021595af25967e5ca8efe81b983e6dc"
 }
