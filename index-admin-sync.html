@@ -68,7 +68,9 @@
     .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
     .badge-player-tag { background: #2a2a40; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; }
     .checkbox-list { max-height: 300px; overflow-y: auto; margin: 10px 0; }
-    .checkbox-item { padding: 10px; background: #1a1a2e; margin: 5px 0; border-radius: 8px; display: flex; align-items: center; gap: 10px; }
+    .checkbox-item { padding: 10px; background: #1a1a2e; margin: 5px 0; border-radius: 8px; display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+    .checkbox-item label { flex: 1; cursor: pointer; margin: 0; }
+    .checkbox-item input[type="checkbox"] { width: auto; margin: 0; cursor: pointer; }
     .attendee-input { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: center; margin: 10px 0; }
     @media (max-width: 768px) {
       h1 { font-size: 1.8em; }
@@ -494,8 +496,8 @@
           const checked = night.attendees.some(a => a.playerId === player.id);
           checkboxContainer.innerHTML += `
             <div class="checkbox-item">
-              <input type="checkbox" id="player_${player.id}" ${checked ? 'checked' : ''}>
               <label for="player_${player.id}">${player.name}</label>
+              <input type="checkbox" id="player_${player.id}" ${checked ? 'checked' : ''}>
             </div>
           `;
         });
