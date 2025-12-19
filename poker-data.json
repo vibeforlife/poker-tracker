@@ -53,6 +53,16 @@
   ],
   "nights": [
     {
+      "id": 1766144994056,
+      "name": "Nooruddin house",
+      "date": "2025-12-21",
+      "time": "20:49",
+      "location": "Mississauga",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20
+    },
+    {
       "id": 1766143862801,
       "name": "Test 11",
       "date": "2025-12-20",
@@ -234,5 +244,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "a505556a0e5c44554e2ebeca7803dd4c1fc88ae4"
+  "sha": "ab3970ab594aa75a767ebe64e5213c366f3efe73"
 }
