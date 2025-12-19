@@ -46,55 +46,8 @@
       "email": ""
     }
   ],
-  "nights": [
-    {
-      "id": 1765598092758,
-      "name": "Test 2025",
-      "date": "2025-12-12",
-      "time": "19:00",
-      "location": "Mississauga",
-      "attendees": [
-        {
-          "playerId": 1765597994627,
-          "winnings": 30
-        },
-        {
-          "playerId": 1765597999146,
-          "winnings": 10
-        },
-        {
-          "playerId": 1765598003121,
-          "winnings": 10
-        },
-        {
-          "playerId": 1765598007071,
-          "winnings": -10
-        },
-        {
-          "playerId": 1765598011784,
-          "winnings": -10
-        },
-        {
-          "playerId": 1765598020314,
-          "winnings": -20
-        },
-        {
-          "playerId": 1765598024250,
-          "winnings": 30
-        },
-        {
-          "playerId": 1765598029607,
-          "winnings": 10
-        },
-        {
-          "playerId": 1765598039735,
-          "winnings": -20
-        }
-      ],
-      "buyIn": 20
-    }
-  ],
+  "nights": [],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "bb82d781ace583c3769bae4eb62996799d5b0335"
+  "sha": "6b8a34d8bbd361f9b78632bf2c5d412ced48c486"
 }
