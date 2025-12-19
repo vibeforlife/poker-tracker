@@ -138,9 +138,27 @@
         ],
         "notes": ""
       }
+    },
+    {
+      "id": 1766141899530,
+      "name": "Test1",
+      "date": "2025-12-19",
+      "time": "19:00",
+      "location": "My house",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
     }
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "4a938f871601576ab41a889a1deb76ea34311de5"
+  "sha": "c9febee776d0431b99ed25cf445d58277338e319"
 }
