@@ -44,11 +44,6 @@
       "id": 1765598039735,
       "name": "Sarferaz",
       "email": ""
-    },
-    {
-      "id": 1766143933709,
-      "name": "TBD",
-      "email": "tbd@hotmail.com"
     }
   ],
   "nights": [
@@ -362,5 +357,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "27ebf456b458efe08e2c953a454ae1421dfe1c48"
+  "sha": "31d07edf74f8ca09aed906285ad4ed674fbfaa9a"
 }
