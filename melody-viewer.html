@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Melody - Poker Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #e4e4e4; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 10px; font-size: 2.5em; background: linear-gradient(45deg, #f39c12, #e74c3c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { text-align: center; color: #aaa; margin-bottom: 30px; }
+    .refresh-btn { background: #3a3a50; color: #e4e4e4; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; margin: 0 5px; }
+    .refresh-btn:hover { background: #4a4a60; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+    .tab { padding: 12px 24px; background: #2a2a40; border: none; border-radius: 8px; color: #e4e4e4; cursor: pointer; font-size: 16px; }
+    .tab:hover { background: #3a3a50; }
+    .tab.active { background: linear-gradient(45deg, #f39c12, #e74c3c); color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .card { background: #2a2a40; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
+    .item-card { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: all 0.3s; }
+    .item-card:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    .night-item { background: #1a1a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: all 0.3s; cursor: pointer; }
+    .night-item:hover { background: #2a2a3e; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    .notes-display { font-size: 0.9em; color: #aaa; margin-top: 8px; font-style: italic; padding: 8px; background: #2a2a40; border-radius: 6px; }
+    .achievement { display: inline-block; padding: 5px 10px; background: linear-gradient(45deg, #f39c12, #e74c3c); border-radius: 20px; margin: 5px; font-size: 12px; }
+    .badge-card { background: linear-gradient(135deg, #2a2a40 0%, #1a1a2e 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #f39c12; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+    .badge-header { font-size: 2em; margin-bottom: 15px; }
+    .badge-desc { color: #bbb; font-size: 1.1em; margin-bottom: 15px; }
+    .badge-divider { height: 1px; background: linear-gradient(90deg, transparent, #f39c12, transparent); margin: 15px 0; }
+    .badge-players { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+    .badge-player-tag { background: linear-gradient(45deg, #3a3a50, #2a2a40); padding: 8px 16px; border-radius: 20px; font-size: 0.95em; border: 1px solid #4a4a60; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 20px; overflow-y: auto; }
+    .modal.active { display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: #2a2a40; border-radius: 12px; padding: 30px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin: 5px; }
+    .btn-secondary { background: #3a3a50; color: #e4e4e4; }
+    .loading { text-align: center; padding: 40px; font-size: 1.2em; color: #aaa; }
+    .error { text-align: center; padding: 40px; color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/melody.jpg" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border: 3px solid #f39c12;">
+    </div>
+    <h1>Melody</h1>
+    <p class="subtitle">
+      📖 Read-Only View • 
+      <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+      <button class="refresh-btn" onclick="showHandRankings()">🃏 Poker Hands</button>
+    </p>
+
+    <div id="loadingState" class="loading">Loading poker data...</div>
+    <div id="errorState" class="error" style="display: none;">Unable to load data.</div>
+
+    <div id="appContent" style="display: none;">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('nights')">Nights</button>
+        <button class="tab" onclick="switchTab('leaderboard')">Leaderboard</button>
+        <button class="tab" onclick="switchTab('wrapped')">Wrapped</button>
+        <button class="tab" onclick="switchTab('charts')">Charts</button>
+        <button class="tab" onclick="switchTab('badges')">Badges</button>
+        <button class="tab" onclick="switchTab('lifetime')">Lifetime</button>
+      </div>
+
+      <div id="nights" class="tab-content active">
+        <div class="card"><h2>📅 Recent Poker Nights</h2><div id="nightsList"></div></div>
+      </div>
+
+      <div id="leaderboard" class="tab-content">
+        <div class="card"><h2>🏆 Leaderboard</h2><div id="leaderboardList"></div></div>
+      </div>
+
+      <div id="wrapped" class="tab-content">
+        <div class="card">
+          <h2>🎁 Your Poker Wrapped</h2>
+          <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+            <div><label>Period:</label>
+              <select id="wrappedPeriod" onchange="renderWrapped()" style="padding: 8px; background: #1a1a2e; color: #e4e4e4; border: 1px solid #3a3a50; border-radius: 8px; margin-left: 10px;">
+                <option value="ytd">Year to Date</option>
+                <option value="lifetime">Lifetime</option>
+              </select>
+            </div>
+            <div><label>Player:</label>
+              <select id="wrappedPlayer" onchange="renderWrapped()" style="padding: 8px; background: #1a1a2e; color: #e4e4e4; border: 1px solid #3a3a50; border-radius: 8px; margin-left: 10px;">
+                <option value="">All Players</option>
+              </select>
+            </div>
+          </div>
+          <div id="wrappedContent"></div>
+        </div>
+      </div>
+
+      <div id="charts" class="tab-content">
+        <div class="card"><h2>Total Winnings</h2><div style="height: 300px; position: relative;"><canvas id="totalWinningsChart"></canvas></div></div>
+        <div class="card"><h2>Games Played</h2><div style="height: 300px; position: relative;"><canvas id="gamesPlayedChart"></canvas></div></div>
+        <div class="card"><h2>Average Winnings</h2><div style="height: 300px; position: relative;"><canvas id="avgWinningsChart"></canvas></div></div>
+      </div>
+
+      <div id="badges" class="tab-content">
+        <div class="card"><h2>🏅 All Badges</h2><div id="badgesList"></div></div>
+      </div>
+
+      <div id="lifetime" class="tab-content">
+        <div class="card"><h2>🌟 Lifetime Leaderboard</h2><div id="lifetimeLeaderboard"></div></div>
+        <div class="card"><h2>📅 Year by Year</h2><div id="yearByYearStats"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="playerProfileModal" class="modal">
+    <div class="modal-content">
+      <h2 id="playerProfileName"></h2>
+      <div id="playerProfileContent"></div>
+      <button class="btn btn-secondary" onclick="closeModal('playerProfileModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="nightDetailModal" class="modal">
+    <div class="modal-content">
+      <h2 id="nightDetailName"></h2>
+      <div id="nightDetailContent"></div>
+      <button class="btn btn-secondary" onclick="closeModal('nightDetailModal')">Close</button>
+    </div>
+  </div>
+
+  <div id="handRankingsModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <h2>🃏 Poker Hand Rankings</h2>
+      <img src="https://raw.githubusercontent.com/vibeforlife/poker-tracker/main/poker%20hand%20rankings.jpg" style="max-width: 100%; border-radius: 8px; margin: 20px 0;">
+      <button class="btn btn-secondary" onclick="closeModal('handRankingsModal')">Close</button>
+    </div>
+  </div>
+
+  <script src="poker-viewer-script.js"></script>
+</body>
+</html>
