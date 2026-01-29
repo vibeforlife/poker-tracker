@@ -54,7 +54,7 @@
   "nights": [
     {
       "id": 1766147883239,
-      "name": "Exxpense night",
+      "name": "Expense night",
       "date": "2025-12-27",
       "time": "19:00",
       "location": "",
@@ -411,5 +411,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "22ae863b8259326873a7e24d85d70f6406fcea16"
+  "sha": "d654e410fa748543a29c122bdc8e56e2c9f140f3"
 }
