@@ -98,7 +98,7 @@
     },
     {
       "id": 1766145391556,
-      "name": "Z night",
+      "name": "ZZZZ night",
       "date": "2025-12-26",
       "time": "19:00",
       "location": "",
@@ -411,5 +411,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "d654e410fa748543a29c122bdc8e56e2c9f140f3"
+  "sha": "894a3cd340904cbeaadfcde3379f6378ddb5ef32"
 }
