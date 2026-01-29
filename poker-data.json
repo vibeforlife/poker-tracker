@@ -53,6 +53,24 @@
   ],
   "nights": [
     {
+      "id": 1769662846436,
+      "name": "2026 - 1 - Dosssajee",
+      "date": "2026-01-29",
+      "time": "19:30",
+      "location": "Dossajee house",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
+    },
+    {
       "id": 1766147883239,
       "name": "Exxpense night",
       "date": "2025-12-27",
@@ -411,5 +429,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "3db8a698dcd3ff9e2809ba98f45f9cdfc7601a67"
+  "sha": "abc915ec19b0725f99e1f6c466795ea3848b6a1b"
 }
