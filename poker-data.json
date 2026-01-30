@@ -59,14 +59,56 @@
       "time": "19:39",
       "location": "his houser",
       "notes": "",
-      "attendees": [],
-      "buyIn": 20,
+      "attendees": [
+        {
+          "playerId": 1765597994627,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765597999146,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598003121,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598007071,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598020314,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598024250,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598029607,
+          "winnings": -10
+        },
+        {
+          "playerId": 1765598039735,
+          "winnings": -10
+        }
+      ],
+      "buyIn": 10,
       "expenses": {
-        "food": 0,
+        "food": 198,
         "drinks": 0,
         "other": 0,
-        "paidBy": null,
-        "splitAmong": [],
+        "paidBy": 1765598024250,
+        "splitAmong": [
+          1765597994627,
+          1765597999146,
+          1765598003121,
+          1765598007071,
+          1765598020314,
+          1765598024250,
+          1765598029607,
+          1765598039735
+        ],
         "notes": ""
       }
     },
@@ -429,5 +471,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "f235b1e43b490c34ad239cfa258fae1a6318409f"
+  "sha": "2eeae767246cf27a507725efd39dacbd934d6e1b"
 }
