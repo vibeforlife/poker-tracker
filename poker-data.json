@@ -90,7 +90,7 @@
         },
         {
           "playerId": 1765598039735,
-          "winnings": -20
+          "winnings": -13
         }
       ],
       "buyIn": 10,
@@ -471,5 +471,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "46420594dc0926b8686ee6351e1921cbe6ba3268"
+  "sha": "d6dd31373fd34328878dcb662ae917242574654b"
 }
