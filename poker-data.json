@@ -95,7 +95,7 @@
       ],
       "buyIn": 10,
       "expenses": {
-        "food": 198,
+        "food": 140,
         "drinks": 0,
         "other": 0,
         "paidBy": 1765598024250,
@@ -471,5 +471,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "e5d568b8e97807cd3b626f5f028d98f5c84d5773"
+  "sha": "1bb711d79edb53a3a0a069239877f3ea77dfd2ba"
 }
