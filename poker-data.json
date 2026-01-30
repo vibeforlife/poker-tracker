@@ -62,7 +62,7 @@
       "attendees": [
         {
           "playerId": 1765597994627,
-          "winnings": 5
+          "winnings": -11
         },
         {
           "playerId": 1765597999146,
@@ -471,5 +471,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "f6026006999c08d9a376c6f1192d5222f1995363"
+  "sha": "addf6855a7bd0f6abef2786e2a68159ccbdd0fdc"
 }
