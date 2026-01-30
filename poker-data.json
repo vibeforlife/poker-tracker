@@ -53,6 +53,24 @@
   ],
   "nights": [
     {
+      "id": 1769742726190,
+      "name": "DOSSAJEE HOUSE",
+      "date": "2026-01-29",
+      "time": "19:39",
+      "location": "his houser",
+      "notes": "",
+      "attendees": [],
+      "buyIn": 20,
+      "expenses": {
+        "food": 0,
+        "drinks": 0,
+        "other": 0,
+        "paidBy": null,
+        "splitAmong": [],
+        "notes": ""
+      }
+    },
+    {
       "id": 1766147883239,
       "name": "Expense night",
       "date": "2025-12-27",
@@ -411,5 +429,5 @@
   ],
   "archivedYears": {},
   "currentYear": 2025,
-  "sha": "b73a24298320775d4264f9742fc504e928cf64b1"
+  "sha": "f235b1e43b490c34ad239cfa258fae1a6318409f"
 }
